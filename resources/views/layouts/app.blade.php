@@ -50,6 +50,7 @@
     <a href="{{ route('sources.index') }}">Sources</a>
     <a href="{{ route('measures.index') }}">Measures</a>
     <a href="{{ route('trends.index') }}">Trends</a>
+    <a href="{{ route('challenges.index') }}">Challenges</a>
     <a href="{{ route('digest') }}">Digest</a>
     <a href="{{ route('processes.index') }}">Automation</a>
     <a href="{{ route('intelligence.allocore') }}">Allocore</a>

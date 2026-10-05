@@ -58,6 +58,7 @@ Route::get('/users/{externalUserId}', [UserIntelligenceController::class, 'show'
 
 Route::get('/digest', [DigestController::class, 'index'])->name('digest');
 
+Route::get('/challenges', [ChallengeController::class, 'index'])->name('challenges.index');
 Route::get('/challenges/{challenge}', [ChallengeController::class, 'show'])->name('challenges.show');
 Route::get('/intelligence/platform/{source}', [IntelligenceController::class, 'platform'])->name('intelligence.platform');
 Route::get('/intelligence/allocore', [IntelligenceController::class, 'allocore'])->name('intelligence.allocore');
