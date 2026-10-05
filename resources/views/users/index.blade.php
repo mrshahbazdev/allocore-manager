@@ -2,6 +2,16 @@
 @section('content')
 <h1>Users</h1>
 <div class="card">
+    <form method="GET" style="margin-bottom:.75rem">
+        <select name="source_id">
+            <option value="">All sources</option>
+            @foreach ($sources as $src)
+                <option value="{{ $src->id }}" @selected((string) $sourceId === (string) $src->id)>{{ $src->name }}</option>
+            @endforeach
+        </select>
+        <button>Filter</button>
+        <a href="{{ route('users.index') }}">clear</a>
+    </form>
     <table>
         <tr><th>User (platform id)</th><th>Source</th><th>Signals</th><th>Last seen</th></tr>
         @foreach ($users as $u)
