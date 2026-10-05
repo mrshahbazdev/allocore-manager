@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+Route::get('/signals', [SignalController::class, 'index'])->name('signals.index');
 Route::get('/signals/new', [SignalController::class, 'create'])->name('signals.create');
 Route::post('/signals', [SignalController::class, 'store'])->name('signals.store');
 
