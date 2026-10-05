@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\SignalController;
 use App\Http\Controllers\Web\SignalImportController;
 use App\Http\Controllers\Web\SourceController;
 use App\Http\Controllers\Web\TrendController;
+use App\Http\Controllers\Web\UserIntelligenceController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -44,6 +45,9 @@ Route::get('/trends', [TrendController::class, 'index'])->name('trends.index');
 Route::get('/processes', [ProcessController::class, 'index'])->name('processes.index');
 Route::post('/processes', [ProcessController::class, 'store'])->name('processes.store');
 Route::post('/processes/{process}/advance', [ProcessController::class, 'advance'])->name('processes.advance');
+
+Route::get('/users', [UserIntelligenceController::class, 'index'])->name('users.index');
+Route::get('/users/{externalUserId}', [UserIntelligenceController::class, 'show'])->name('users.show');
 
 Route::get('/intelligence/platform/{source}', [IntelligenceController::class, 'platform'])->name('intelligence.platform');
 Route::get('/intelligence/allocore', [IntelligenceController::class, 'allocore'])->name('intelligence.allocore');

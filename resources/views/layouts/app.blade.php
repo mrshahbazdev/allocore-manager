@@ -45,6 +45,7 @@
     <a class="brand" href="{{ route('dashboard') }}">Allocore Manager</a>
     <a href="{{ route('companies.index') }}">Companies</a>
     <a href="{{ route('clusters.index') }}">Clusters</a>
+    <a href="{{ route('users.index') }}">Users</a>
     <a href="{{ route('signals.create') }}">New Signal</a>
     <a href="{{ route('sources.index') }}">Sources</a>
     <a href="{{ route('measures.index') }}">Measures</a>
