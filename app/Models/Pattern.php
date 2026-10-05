@@ -9,7 +9,7 @@ class Pattern extends Model
 {
     protected $fillable = [
         'challenge_key', 'action_measure_id', 'cohort',
-        'attempts', 'successes', 'failures', 'failure_reasons', 'last_outcome_at',
+        'attempts', 'successes', 'failures', 'dismissals', 'failure_reasons', 'last_outcome_at',
     ];
 
     protected function casts(): array
@@ -19,6 +19,7 @@ class Pattern extends Model
             'attempts' => 'integer',
             'successes' => 'integer',
             'failures' => 'integer',
+            'dismissals' => 'integer',
             'last_outcome_at' => 'datetime',
         ];
     }
@@ -53,10 +54,21 @@ class Pattern extends Model
         };
     }
 
+    /**
+     * Recommendations that keep getting dismissed teach the system its
+     * advice is being ignored — adoption weighs the effective rate down.
+     */
+    public function adoptionFactor(): float
+    {
+        $total = $this->attempts + $this->dismissals;
+
+        return $total === 0 ? 1.0 : $this->attempts / $total;
+    }
+
     public function effectiveRate(): ?float
     {
         $rate = $this->successRate();
 
-        return $rate === null ? null : round($rate * $this->freshnessFactor(), 1);
+        return $rate === null ? null : round($rate * $this->freshnessFactor() * $this->adoptionFactor(), 1);
     }
 }
