@@ -22,8 +22,7 @@
 
 <div class="card">
     <h2>Needs attention</h2>
-    @if ($pendingRecs->isEmpty() && $unmeasured->isEmpty() && $overdue->isEmpty() && $staleSources->isEmpty())
-    @if ($pendingRecs->isEmpty() && $unmeasured->isEmpty() && $stalledAccepted->isEmpty() && $staleSources->isEmpty())
+    @if ($pendingRecs->isEmpty() && $unmeasured->isEmpty() && $overdue->isEmpty() && $stalledAccepted->isEmpty() && $staleSources->isEmpty())
         <p class="muted">Nothing waiting — all recommendations decided and all implemented measures measured.</p>
     @endif
     @if ($staleSources->isNotEmpty())

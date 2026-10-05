@@ -63,7 +63,6 @@ class TrendDetector
             ->values();
     }
 
-    private function counts($from, $to): Collection
     private function counts($from, $to, ?int $sourceId = null): Collection
     {
         return Signal::whereNotNull('challenge_key')
