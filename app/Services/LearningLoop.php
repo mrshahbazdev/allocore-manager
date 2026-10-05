@@ -58,8 +58,35 @@ class LearningLoop
             });
     }
 
-    private function updatePatterns(Recommendation $recommendation, string $result, ?string $failureReason): void
+    /**
+     * Rebuild every pattern row from the recorded outcome stream. Recovery
+     * tool: if patterns were lost, corrupted, or the scoring rules changed,
+     * replay the evidence instead of trusting the accumulated table.
+     */
+    public function rebuildPatterns(): int
     {
+        $replay = Outcome::with('recommendation.company')
+            ->whereNotNull('measured_at')
+            ->oldest('measured_at')
+            ->cursor();
+
+        $count = 0;
+        foreach ($replay as $outcome) {
+            $this->updatePatterns(
+                $outcome->recommendation,
+                $outcome->result,
+                $outcome->failure_reason,
+                $outcome->measured_at
+            );
+            $count++;
+        }
+
+        return $count;
+    }
+
+    private function updatePatterns(Recommendation $recommendation, string $result, ?string $failureReason, $at = null): void
+    {
+        $at ??= now();
         $cohorts = ['global', $this->similarity->cohortFor($recommendation->company)];
 
         foreach (array_unique($cohorts) as $cohort) {
@@ -73,7 +100,7 @@ class LearningLoop
             );
 
             $pattern->increment('attempts');
-            $pattern->update(['last_outcome_at' => now()]);
+            $pattern->update(['last_outcome_at' => $at]);
 
             match ($result) {
                 Outcome::RESULT_SUCCESS, Outcome::RESULT_PARTIAL => $pattern->increment('successes'),
