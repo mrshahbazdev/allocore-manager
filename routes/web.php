@@ -41,6 +41,7 @@ Route::post('/companies/{company}/refresh', [CompanyController::class, 'refresh'
 Route::get('/clusters', [ClusterController::class, 'index'])->name('clusters.index');
 
 Route::patch('/recommendations/{recommendation}', [RecommendationController::class, 'update'])->name('recommendations.update');
+Route::get('/recommendations/{recommendation}/outcome', [RecommendationController::class, 'editOutcome'])->name('recommendations.outcome.edit');
 Route::post('/recommendations/{recommendation}/outcome', [RecommendationController::class, 'outcome'])->name('recommendations.outcome');
 
 Route::get('/trends', [TrendController::class, 'index'])->name('trends.index');
