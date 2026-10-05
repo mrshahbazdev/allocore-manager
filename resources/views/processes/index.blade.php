@@ -48,7 +48,7 @@
     <h2>Decision-path maturity (per challenge)</h2>
     <p class="muted">Where each challenge's loop stands on the manual → automated ladder, based on measured evidence.</p>
     <table>
-        <tr><th>Challenge</th><th>Recs</th><th>Implemented</th><th>Outcomes</th><th>Coverage</th><th>Suggested stage</th><th>Why</th></tr>
+        <tr><th>Challenge</th><th>Recs</th><th>Implemented</th><th>Outcomes</th><th>Coverage</th><th>Suggested stage</th><th>Why</th><th></th></tr>
         @foreach ($paths as $p)
         <tr>
             <td>{{ $p['challenge_key'] }}</td>
@@ -58,9 +58,15 @@
             <td>{{ round($p['coverage'] * 100) }}%</td>
             <td><span class="badge b-accepted">{{ str_replace('_', ' ', $p['suggested_stage']) }}</span></td>
             <td class="muted">{{ $p['reason'] }}</td>
+            <td>
+                <form class="inline" method="POST" action="{{ route('processes.adopt') }}">@csrf
+                    <input type="hidden" name="challenge_key" value="{{ $p['challenge_key'] }}">
+                    <button type="submit" style="width:auto;padding:.2rem .6rem">track</button>
+                </form>
+            </td>
         </tr>
         @endforeach
-        @if ($paths->isEmpty())<tr><td colspan="7" class="muted">No recommendations yet.</td></tr>@endif
+        @if ($paths->isEmpty())<tr><td colspan="8" class="muted">No recommendations yet.</td></tr>@endif
     </table>
 </div>
 @endsection

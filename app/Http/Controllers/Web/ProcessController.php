@@ -31,6 +31,24 @@ class ProcessController extends Controller
         return back()->with('status', 'Process registered (starts as manual).');
     }
 
+    // One-click: adopt the advisor's suggested stage for a challenge as a
+    // tracked process (manual → automated ladder applied to the loop itself).
+    public function adopt(Request $request, AutomationAdvisor $advisor)
+    {
+        $data = $request->validate(['challenge_key' => ['required', 'string', 'max:255']]);
+        $path = collect($advisor->assess())->firstWhere('challenge_key', $data['challenge_key']);
+
+        abort_unless($path, 404);
+
+        $process = Process::firstOrCreate(
+            ['name' => "decision-loop:{$data['challenge_key']}"],
+            ['scope' => 'ecosystem', 'description' => "Decision loop for {$data['challenge_key']}"]
+        );
+        $process->advanceTo($path['suggested_stage'], $path['reason']);
+
+        return back()->with('status', "Challenge loop tracked at {$path['suggested_stage']}.");
+    }
+
     public function advance(Request $request, Process $process)
     {
         $data = $request->validate([

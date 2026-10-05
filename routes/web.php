@@ -57,6 +57,7 @@ Route::post('/recommendations/{recommendation}/outcome', [RecommendationControll
 Route::get('/trends', [TrendController::class, 'index'])->name('trends.index');
 Route::get('/processes', [ProcessController::class, 'index'])->name('processes.index');
 Route::post('/processes', [ProcessController::class, 'store'])->name('processes.store');
+Route::post('/processes/adopt', [ProcessController::class, 'adopt'])->name('processes.adopt');
 Route::post('/processes/{process}/advance', [ProcessController::class, 'advance'])->name('processes.advance');
 
 Route::get('/users', [UserIntelligenceController::class, 'index'])->name('users.index');
