@@ -29,6 +29,16 @@
     </div>
 </div>
 <div class="card">
+    <h2>Growth — last 6 months</h2>
+    <table>
+        <tr><th>Month</th><th>New companies</th><th>Signals</th></tr>
+        @foreach ($monthlyGrowth as $row)
+        <tr><td>{{ $row->month }}</td><td>{{ $row->companies }}</td><td>{{ $row->signals }}</td></tr>
+        @endforeach
+        @if ($monthlyGrowth->isEmpty())<tr><td colspan="3" class="muted">No activity in the last 6 months.</td></tr>@endif
+    </table>
+</div>
+<div class="card">
     <h2>Emerging risks (last 30 days)</h2>
     <table>
         <tr><th>Challenge</th><th>Signals</th></tr>

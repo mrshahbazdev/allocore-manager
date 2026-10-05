@@ -203,7 +203,28 @@ class IntelligenceController extends Controller
             'staleSources' => Source::where('is_active', true)->get()
                 ->filter(fn ($s) => ! $s->signals()->where('occurred_at', '>=', now()->subDays(30))->exists())
                 ->count(),
+            'monthlyGrowth' => $this->monthlyGrowth(),
         ]);
+    }
+
+    /**
+     * New companies and signals per calendar month, last 6 months —
+     * DISAVO's growth indicator.
+     */
+    private function monthlyGrowth()
+    {
+        $companies = Company::where('created_at', '>=', now()->subMonths(6)->startOfMonth())
+            ->selectRaw("strftime('%Y-%m', created_at) as month, count(*) as total")
+            ->groupBy('month')->pluck('total', 'month');
+        $signals = Signal::where('occurred_at', '>=', now()->subMonths(6)->startOfMonth())
+            ->selectRaw("strftime('%Y-%m', occurred_at) as month, count(*) as total")
+            ->groupBy('month')->pluck('total', 'month');
+
+        return $companies->keys()->merge($signals->keys())->unique()->sort()->map(fn ($m) => (object) [
+            'month' => $m,
+            'companies' => (int) ($companies[$m] ?? 0),
+            'signals' => (int) ($signals[$m] ?? 0),
+        ])->values();
     }
 
     /**
