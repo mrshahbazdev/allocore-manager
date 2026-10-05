@@ -15,7 +15,8 @@
             </div>
             <div>
                 <label>Challenge key</label>
-                <input name="challenge_key" placeholder="missing_access_review">
+                <input name="challenge_key" list="challenge-keys" placeholder="missing_access_review">
+                <datalist id="challenge-keys">@foreach ($challengeKeys as $k)<option value="{{ $k }}">@endforeach</datalist>
             </div>
             <div>
                 <label>User id (on platform)</label>
@@ -28,7 +29,8 @@
         </div>
         <h2 style="margin-top:1rem">Lifecycle fields <span class="muted">(action.implemented / outcome.measured only)</span></h2>
         <div class="grid-2">
-            <div><label>Measure key</label><input name="measure_key" placeholder="quarterly_access_reviews"></div>
+            <div><label>Measure key</label><input name="measure_key" list="measure-keys" placeholder="quarterly_access_reviews">
+                <datalist id="measure-keys">@foreach ($measureKeys as $k)<option value="{{ $k }}">@endforeach</datalist></div>
             <div>
                 <label>Result</label>
                 <select name="result"><option value="">—</option><option>success</option><option>partial</option><option>failure</option></select>
