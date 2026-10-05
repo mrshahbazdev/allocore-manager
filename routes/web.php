@@ -4,6 +4,7 @@ use App\Http\Controllers\Web\ActionMeasureController;
 use App\Http\Controllers\Web\ClusterController;
 use App\Http\Controllers\Web\CompanyController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\DigestController;
 use App\Http\Controllers\Web\IntelligenceController;
 use App\Http\Controllers\Web\ProcessController;
 use App\Http\Controllers\Web\RecommendationController;
@@ -48,6 +49,8 @@ Route::post('/processes/{process}/advance', [ProcessController::class, 'advance'
 
 Route::get('/users', [UserIntelligenceController::class, 'index'])->name('users.index');
 Route::get('/users/{externalUserId}', [UserIntelligenceController::class, 'show'])->name('users.show');
+
+Route::get('/digest', [DigestController::class, 'index'])->name('digest');
 
 Route::get('/intelligence/platform/{source}', [IntelligenceController::class, 'platform'])->name('intelligence.platform');
 Route::get('/intelligence/allocore', [IntelligenceController::class, 'allocore'])->name('intelligence.allocore');
