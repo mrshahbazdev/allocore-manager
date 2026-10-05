@@ -10,7 +10,7 @@
         </div>
         <label>Description</label><textarea name="description" rows="3"></textarea>
         <label>Addresses challenges (comma separated)</label>
-        <input name="addresses_challenges" placeholder="missing_access_review, stale_permissions">
+        <input name="addresses_challenges" value="{{ old('addresses_challenges', $prefillChallenge ?? '') }}" placeholder="missing_access_review, stale_permissions">
         <div style="margin-top:1rem"><input type="submit" value="Add to catalog"></div>
     </form>
 </div>
