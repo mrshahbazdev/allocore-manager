@@ -9,7 +9,8 @@
         <tr>
             <td><code>{{ $m->key }}</code></td>
             <td><a href="{{ route('measures.show', $m) }}">{{ $m->name }}</a></td>
-            <td class="muted">{{ implode(', ', $m->addresses_challenges ?? []) }}</td>
+            <td class="muted">{{ implode(', ', $m->addresses_challenges ?? []) }}
+                @if (empty(array_intersect($m->addresses_challenges ?? [], $signalled->all())))<span class="badge b-partial">no signals</span>@endif</td>
             <td>{{ $m->recommendations_count }}</td>
             <td><span class="badge b-{{ $m->is_active ? 'success' : 'dismissed' }}">{{ $m->is_active ? 'active' : 'inactive' }}</span></td>
             <td style="white-space:nowrap">

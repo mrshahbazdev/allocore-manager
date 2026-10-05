@@ -1,6 +1,11 @@
 @extends('layouts.app')
 @section('content')
-<h1>Daily digest <span class="muted">(last 24 hours)</span></h1>
+<h1>Daily digest <span class="muted">(last {{ $days === 1 ? '24 hours' : $days.' days' }})</span></h1>
+<p style="margin-bottom:1rem">
+    @foreach ([1, 3, 7, 14] as $d)
+        <a href="?days={{ $d }}" class="badge {{ $days === $d ? 'b-accepted' : 'b-pending' }}">{{ $d }}d</a>
+    @endforeach
+</p>
 
 <div class="stat-grid">
     <div class="stat"><div class="num">{{ $signals }}</div><div class="lbl">New signals</div></div>
@@ -11,7 +16,7 @@
 </div>
 
 <div class="card">
-    <h2>Most active challenges (24h)</h2>
+    <h2>Most active challenges</h2>
     <table>
         <tr><th>Challenge</th><th>Signals</th></tr>
         @foreach ($topChallenges as $c)

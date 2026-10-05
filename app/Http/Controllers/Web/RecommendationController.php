@@ -49,6 +49,12 @@ class RecommendationController extends Controller
         ]);
     }
 
+    public function show(Recommendation $recommendation)
+    {
+        return view('recommendations.show', [
+            'recommendation' => $recommendation->load('company', 'actionMeasure', 'signal', 'outcome'),
+        ]);
+    }
     public function update(Request $request, Recommendation $recommendation, LearningLoop $loop)
     {
         $data = $request->validate([
