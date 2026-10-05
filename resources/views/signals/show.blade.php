@@ -22,4 +22,22 @@
         <pre style="font-size:.8rem;white-space:pre-wrap">{{ json_encode($signal->payload, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) }}</pre>
     @endif
 </div>
+
+@if ($recommendations->isNotEmpty())
+<div class="card">
+    <h2>Recommendations generated from this signal</h2>
+    <table>
+        <tr><th>Action</th><th>Confidence</th><th>Status</th><th>Outcome</th><th></th></tr>
+        @foreach ($recommendations as $r)
+        <tr>
+            <td>{{ $r->actionMeasure?->name }}</td>
+            <td class="conf">{{ $r->confidence !== null ? $r->confidence.'%' : '—' }}</td>
+            <td><span class="badge b-{{ $r->status }}">{{ $r->status }}</span></td>
+            <td>@if ($r->outcome)<span class="badge b-{{ $r->outcome->result }}">{{ $r->outcome->result }}</span>@else —@endif</td>
+            <td><a href="{{ route('recommendations.show', $r) }}">view</a></td>
+        </tr>
+        @endforeach
+    </table>
+</div>
+@endif
 @endsection
