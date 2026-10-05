@@ -32,7 +32,10 @@ class RecommendationEngine
             ->with('actionMeasure')
             ->get()
             ->filter(fn (Pattern $p) => $p->actionMeasure?->is_active)
-            ->sortByDesc(fn (Pattern $p) => $p->effectiveRate() ?? 0);
+            // Evidence from companies like this one outranks ecosystem-wide
+            // evidence, unless the global pattern is dramatically stronger.
+            ->sortByDesc(fn (Pattern $p) => ($p->effectiveRate() ?? 0)
+                + ($p->cohort === $cohort ? 15 : 0));
 
         // Never re-issue a measure that is pending, was dismissed, or
         // already failed on this challenge for this company — measured
