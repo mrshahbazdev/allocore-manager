@@ -12,6 +12,9 @@
     <div class="stat"><div class="num">{{ $outcomes7d }}</div><div class="lbl">Outcomes this week</div></div>
     <div class="stat"><div class="num">{{ $outcomesPrev7d }}</div><div class="lbl">Outcomes prior week</div></div>
     <div class="stat"><div class="num">{{ $medianDaysToOutcome !== null ? $medianDaysToOutcome.'d' : '—' }}</div><div class="lbl">Median days to outcome</div></div>
+    <div class="stat"><div class="num">{{ $evidenceHealth['fresh'] }}</div><div class="lbl">Patterns fresh (&lt;90d)</div></div>
+    <div class="stat"><div class="num">{{ $evidenceHealth['aging'] + $evidenceHealth['stale'] }}</div><div class="lbl">Patterns aging/stale</div></div>
+    <div class="stat"><div class="num">{{ $evidenceHealth['never'] }}</div><div class="lbl">Patterns no outcomes</div></div>
 </div>
 <div class="card">
     <h2>Patterns</h2>
