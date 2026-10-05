@@ -31,7 +31,7 @@ class RecommendationEngine
             ->with('actionMeasure')
             ->get()
             ->filter(fn (Pattern $p) => $p->actionMeasure?->is_active)
-            ->sortByDesc(fn (Pattern $p) => $p->successRate() ?? 0);
+            ->sortByDesc(fn (Pattern $p) => $p->effectiveRate() ?? 0);
 
         // Never re-issue a measure that is pending or was already dismissed
         // for this challenge on this company.
@@ -49,13 +49,14 @@ class RecommendationEngine
                     'company_id' => $company->id,
                     'action_measure_id' => $pattern->action_measure_id,
                     'challenge_key' => $challengeKey,
-                    'confidence' => $pattern->successRate(),
+                    'confidence' => $pattern->effectiveRate(),
                     'signal_id' => $trigger?->id,
                     'status' => Recommendation::STATUS_PENDING,
                     'rationale' => [
                         'cohort' => $pattern->cohort === 'global' ? 'all companies' : 'similar companies',
                         'attempts' => $pattern->attempts,
                         'success_rate' => $pattern->successRate(),
+                        'evidence_age_days' => $pattern->last_outcome_at?->diffInDays(now()),
                         'message' => sprintf(
                             '%d comparable companies implemented this measure; %s%% achieved the desired improvement.',
                             $pattern->attempts,

@@ -38,6 +38,29 @@ class BestNextActionTest extends TestCase
         $this->get(route('companies.show', $this->company))->assertOk()->assertSee('Best next action');
     }
 
+    public function test_fresh_evidence_outranks_stale_higher_rate(): void
+    {
+        $stale = ActionMeasure::create(['key' => 'stale', 'name' => 'Stale']);
+        $fresh = ActionMeasure::create(['key' => 'fresh', 'name' => 'Fresh']);
+
+        // 100% success but measured a year ago vs 80% measured last week.
+        Pattern::create([
+            'challenge_key' => 'ch', 'action_measure_id' => $stale->id, 'cohort' => 'global',
+            'attempts' => 10, 'successes' => 10, 'failures' => 0,
+            'last_outcome_at' => now()->subDays(400),
+        ]);
+        Pattern::create([
+            'challenge_key' => 'ch', 'action_measure_id' => $fresh->id, 'cohort' => 'global',
+            'attempts' => 10, 'successes' => 8, 'failures' => 2,
+            'last_outcome_at' => now()->subDays(5),
+        ]);
+
+        $recs = $this->engine->recommendFor($this->company, 'ch');
+
+        $this->assertEquals('Fresh', $recs->first()->actionMeasure->name);
+        $this->assertEquals(50.0, $recs->firstWhere('action_measure_id', $stale->id)->confidence);
+    }
+
     public function test_dismissed_measures_are_not_recommended_again(): void
     {
         $measure = ActionMeasure::create(['key' => 'm', 'name' => 'M']);
