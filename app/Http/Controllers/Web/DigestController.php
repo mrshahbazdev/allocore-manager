@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\Outcome;
 use App\Models\Recommendation;
 use App\Models\Signal;
@@ -24,6 +25,12 @@ class DigestController extends Controller
             'days' => $days,
             'since' => $since,
             'signals' => Signal::where('occurred_at', '>=', $since)->count(),
+            'newCompanies' => Company::where('created_at', '>=', $since)->count(),
+            'bySource' => Signal::where('occurred_at', '>=', $since)
+                ->select('source_id', DB::raw('count(*) as total'))
+                ->groupBy('source_id')
+                ->with('source:id,name')
+                ->get()->sortByDesc('total')->values(),
             'topChallenges' => Signal::where('occurred_at', '>=', $since)
                 ->whereNotNull('challenge_key')
                 ->select('challenge_key', DB::raw('count(*) as total'))

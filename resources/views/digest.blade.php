@@ -13,6 +13,18 @@
     <div class="stat"><div class="num">{{ $newOutcomes->count() }}</div><div class="lbl">Outcomes measured</div></div>
     <div class="stat"><div class="num">{{ $pendingCount }}</div><div class="lbl">Decisions waiting</div></div>
     <div class="stat"><div class="num">{{ $unmeasuredCount }}</div><div class="lbl">Outcomes missing</div></div>
+    <div class="stat"><div class="num">{{ $newCompanies }}</div><div class="lbl">New companies</div></div>
+</div>
+
+<div class="card">
+    <h2>Activity by source</h2>
+    <table>
+        <tr><th>Source</th><th>Signals</th></tr>
+        @foreach ($bySource as $row)
+        <tr><td><a href="{{ route('sources.show', $row->source_id) }}">{{ $row->source?->name ?? 'unknown' }}</a></td><td>{{ $row->total }}</td></tr>
+        @endforeach
+        @if ($bySource->isEmpty())<tr><td colspan="2" class="muted">No signals in this window.</td></tr>@endif
+    </table>
 </div>
 
 <div class="card">
