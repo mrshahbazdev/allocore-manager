@@ -31,15 +31,15 @@ Signals in → Patterns → Recommendations → Implementation → Outcomes → 
 - `LearningLoop` — records outcomes and updates global + cohort pattern statistics (including why things failed).
 - `CompanySimilarity` — cohort keys + similarity scoring (situation 60 / maturity 25 / industry 15).
 
-## API (`/api/v1`)
+## Web app (Blade routes)
 
-- `POST /signals` — source token auth (`Authorization: Bearer <ingest_token>`). A `challenge_key` signal immediately triggers recommendations.
-- `GET /companies/{id}/recommendations` · `POST /companies/{id}/recommendations/refresh` · `PATCH /recommendations/{id}`
+- `/` — ecosystem dashboard: stats, sources, learned patterns, recent signals.
+- `/signals/new` + `POST /signals` — record a signal; a `challenge_key` immediately triggers recommendations.
+- `/companies` + `/companies/{id}` — company view: recommended next actions with confidence + rationale, similar companies, signals. Accept/dismiss and record outcome from the page.
 - `POST /recommendations/{id}/outcome` — closes the learning loop.
-- `GET /intelligence/company/{company}` — what the user sees: actionable intelligence, never raw data.
-- `GET /intelligence/platform/{source}` — what a platform manager sees: common failures, emerging risks, effectiveness.
-- `GET /intelligence/allocore` — what the Allocore team sees: patterns, model quality, success rates.
-- `GET /intelligence/disavo` — what DISAVO sees: strategic metrics, growth indicators, emerging risks.
+- `/intelligence/platform/{source}` — what a platform manager sees: common challenges, recommendation effectiveness.
+- `/intelligence/allocore` — what the Allocore team sees: patterns, model quality, success rates.
+- `/intelligence/disavo` — what DISAVO sees: strategic metrics, emerging risks.
 
 ## Feature validation rule
 

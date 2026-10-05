@@ -7,9 +7,7 @@ use App\Models\Company;
 use App\Models\Pattern;
 use App\Models\Recommendation;
 use App\Models\Source;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class DecisionLoopTest extends TestCase
@@ -29,12 +27,10 @@ class DecisionLoopTest extends TestCase
             'name' => 'Implement quarterly access reviews',
             'addresses_challenges' => ['missing_access_review'],
         ]);
-        Sanctum::actingAs(User::factory()->create());
     }
 
     public function test_signal_triggers_recommendation_from_learned_pattern(): void
     {
-        // Prior learning: measure worked for 3 of 4 similar companies.
         Pattern::create([
             'challenge_key' => 'missing_access_review',
             'action_measure_id' => $this->measure->id,
@@ -44,13 +40,14 @@ class DecisionLoopTest extends TestCase
             'failures' => 1,
         ]);
 
-        $response = $this->withToken($this->source->ingest_token)->postJson('/api/v1/signals', [
+        $this->post(route('signals.store'), [
+            'source_id' => $this->source->id,
             'type' => 'risk.detected',
             'challenge_key' => 'missing_access_review',
-            'company' => ['external_id' => 'c-1', 'name' => 'Dental Lab A'],
-        ]);
+            'company_external_id' => 'c-1',
+            'company_name' => 'Dental Lab A',
+        ])->assertRedirect(route('dashboard'));
 
-        $response->assertCreated();
         $rec = Recommendation::first();
         $this->assertNotNull($rec);
         $this->assertEquals(75.0, $rec->confidence);
@@ -73,38 +70,26 @@ class DecisionLoopTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $response = $this->postJson("/api/v1/recommendations/{$rec->id}/outcome", [
+        $this->post(route('recommendations.outcome', $rec), [
             'result' => 'failure',
             'failure_reason' => 'no_budget',
-        ]);
+        ])->assertRedirect();
 
-        $response->assertCreated();
-
-        // Learning: both the global and the company cohort patterns updated.
         $global = Pattern::where('cohort', 'global')->first();
         $this->assertEquals(1, $global->attempts);
         $this->assertEquals(1, $global->failures);
         $this->assertEquals(['no_budget' => 1], $global->failure_reasons);
 
-        $cohort = Pattern::where('cohort', '!=', 'global')->first();
-        $this->assertNotNull($cohort);
+        $this->assertNotNull(Pattern::where('cohort', '!=', 'global')->first());
         $this->assertEquals(Recommendation::STATUS_IMPLEMENTED, $rec->fresh()->status);
     }
 
-    public function test_role_intelligence_endpoints_return_aggregates(): void
+    public function test_intelligence_pages_render_aggregates(): void
     {
         Company::create(['source_id' => $this->source->id, 'external_id' => 'c-3']);
 
-        $this->getJson("/api/v1/intelligence/platform/{$this->source->id}")
-            ->assertOk()
-            ->assertJsonStructure(['source', 'common_challenges', 'recommendation_effectiveness']);
-
-        $this->getJson('/api/v1/intelligence/allocore')
-            ->assertOk()
-            ->assertJsonStructure(['companies', 'signals', 'overall_success_rate', 'patterns']);
-
-        $this->getJson('/api/v1/intelligence/disavo')
-            ->assertOk()
-            ->assertJsonStructure(['ecosystem', 'performance', 'emerging_risks']);
+        $this->get(route('intelligence.platform', $this->source))->assertOk();
+        $this->get(route('intelligence.allocore'))->assertOk();
+        $this->get(route('intelligence.disavo'))->assertOk();
     }
 }

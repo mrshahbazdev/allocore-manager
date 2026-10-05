@@ -10,36 +10,35 @@ class SignalIngestionTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_source_can_push_a_signal_and_company_is_upserted(): void
+    public function test_signal_form_records_signal_and_upserts_company(): void
     {
         $source = Source::create(['key' => 'allocore-de', 'name' => 'Allocore', 'type' => 'saas_platform']);
 
-        $response = $this->withToken($source->ingest_token)->postJson('/api/v1/signals', [
+        $response = $this->post(route('signals.store'), [
+            'source_id' => $source->id,
             'type' => 'risk.detected',
             'challenge_key' => 'missing_access_review',
-            'company' => [
-                'external_id' => 'acme-1',
-                'name' => 'Acme GmbH',
-                'industry' => 'dental',
-                'maturity' => 'growing',
-                'situation' => ['compliance_backlog', 'no_it_team'],
-            ],
+            'company_external_id' => 'acme-1',
+            'company_name' => 'Acme GmbH',
+            'company_industry' => 'dental',
+            'company_maturity' => 'growing',
+            'company_situation' => 'compliance_backlog, no_it_team',
         ]);
 
-        $response->assertCreated()->assertJsonStructure(['signal_id', 'recommendations']);
+        $response->assertRedirect(route('dashboard'));
 
         $this->assertDatabaseHas('companies', [
             'source_id' => $source->id,
             'external_id' => 'acme-1',
             'name' => 'Acme GmbH',
+            'maturity' => 'growing',
         ]);
         $this->assertDatabaseHas('signals', ['type' => 'risk.detected', 'challenge_key' => 'missing_access_review']);
     }
 
-    public function test_invalid_token_is_rejected(): void
+    public function test_dashboard_and_signal_form_render(): void
     {
-        $this->withToken('bad-token')
-            ->postJson('/api/v1/signals', ['type' => 'risk.detected'])
-            ->assertUnauthorized();
+        $this->get(route('dashboard'))->assertOk();
+        $this->get(route('signals.create'))->assertOk();
     }
 }

@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Http\Controllers\Web;
+
+use App\Http\Controllers\Controller;
+use App\Models\ActionMeasure;
+use App\Models\Company;
+use App\Models\Outcome;
+use App\Models\Pattern;
+use App\Models\Recommendation;
+use App\Models\Signal;
+use App\Models\Source;
+
+class DashboardController extends Controller
+{
+    public function index()
+    {
+        return view('dashboard', [
+            'sources' => Source::withCount('companies', 'signals')->get(),
+            'measures' => ActionMeasure::where('is_active', true)->get(),
+            'stats' => [
+                'companies' => Company::count(),
+                'signals' => Signal::count(),
+                'recommendations' => Recommendation::count(),
+                'outcomes' => Outcome::count(),
+            ],
+            'recentSignals' => Signal::with('source', 'company')->latest('occurred_at')->limit(15)->get(),
+            'topPatterns' => Pattern::with('actionMeasure')->orderByDesc('attempts')->limit(10)->get(),
+        ]);
+    }
+}
