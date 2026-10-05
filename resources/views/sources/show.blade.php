@@ -44,6 +44,30 @@
 </div>
 
 <div class="card">
+    <h2>Emerging trends (30d vs prior 30d)</h2>
+    <table>
+        <tr><th>Challenge</th><th>Recent</th><th>Prior</th><th>Trend</th></tr>
+        @foreach ($trends as $t)
+        <tr>
+            <td><a href="{{ route('challenges.show', $t['challenge_key']) }}"><code>{{ $t['challenge_key'] }}</code></a></td>
+            <td>{{ $t['recent'] }}</td>
+            <td class="muted">{{ $t['previous'] }}</td>
+            <td>
+                @if ($t['direction'] === 'rising')
+                    <span class="badge b-failure">rising {{ $t['growth_pct'] !== null ? "+{$t['growth_pct']}%" : 'new' }}</span>
+                @elseif ($t['direction'] === 'falling')
+                    <span class="badge b-partial">falling {{ $t['growth_pct'] }}%</span>
+                @else
+                    <span class="badge b-pending">stable</span>
+                @endif
+            </td>
+        </tr>
+        @endforeach
+        @if ($trends->isEmpty())<tr><td colspan="4" class="muted">No challenge signals yet.</td></tr>@endif
+    </table>
+</div>
+
+<div class="card">
     <h2>Companies reporting</h2>
     <table>
         <tr><th>Company</th><th>External id</th><th>Maturity</th></tr>

@@ -15,13 +15,13 @@ class TrendDetector
      *
      * @return Collection<int, array{challenge_key: string, recent: int, previous: int, growth_pct: float|null, direction: string}>
      */
-    public function detect(int $windowDays = 30): Collection
+    public function detect(int $windowDays = 30, ?int $sourceId = null): Collection
     {
         $recentFrom = now()->subDays($windowDays);
         $previousFrom = now()->subDays($windowDays * 2);
 
-        $recent = $this->counts($recentFrom, now());
-        $previous = $this->counts($previousFrom, $recentFrom);
+        $recent = $this->counts($recentFrom, now(), $sourceId);
+        $previous = $this->counts($previousFrom, $recentFrom, $sourceId);
 
         return $recent->keys()->merge($previous->keys())->unique()
             ->map(function (string $key) use ($recent, $previous) {
@@ -47,9 +47,10 @@ class TrendDetector
             ->values();
     }
 
-    private function counts($from, $to): Collection
+    private function counts($from, $to, ?int $sourceId = null): Collection
     {
         return Signal::whereNotNull('challenge_key')
+            ->when($sourceId, fn ($q) => $q->where('source_id', $sourceId))
             ->whereBetween('occurred_at', [$from, $to])
             ->select('challenge_key', DB::raw('count(*) as total'))
             ->groupBy('challenge_key')
