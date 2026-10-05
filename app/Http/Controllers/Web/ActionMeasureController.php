@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActionMeasure;
+use App\Models\Outcome;
 use Illuminate\Http\Request;
 
 class ActionMeasureController extends Controller
@@ -18,6 +19,21 @@ class ActionMeasureController extends Controller
     public function create()
     {
         return view('measures.create');
+    }
+
+    public function show(ActionMeasure $measure)
+    {
+        $outcomes = Outcome::whereIn('recommendation_id', $measure->recommendations()->select('id'));
+
+        return view('measures.show', [
+            'measure' => $measure,
+            'recommendations' => $measure->recommendations()->count(),
+            'outcomes' => $outcomes->count(),
+            'successRate' => $outcomes->count() > 0
+                ? round((clone $outcomes)->whereIn('result', ['success', 'partial'])->count() / $outcomes->count() * 100, 1)
+                : null,
+            'patterns' => $measure->patterns()->orderByDesc('attempts')->get(),
+        ]);
     }
 
     public function store(Request $request)

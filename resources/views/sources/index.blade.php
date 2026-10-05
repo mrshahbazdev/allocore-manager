@@ -13,7 +13,7 @@
             <td>{{ $s->companies_count }}</td>
             <td>{{ $s->signals_count }}</td>
             <td><span class="badge b-{{ $s->is_active ? 'success' : 'dismissed' }}">{{ $s->is_active ? 'active' : 'inactive' }}</span></td>
-            <td><a href="{{ route('sources.edit', $s) }}">Edit</a> · <a href="{{ route('intelligence.platform', $s) }}">Intelligence</a></td>
+            <td><a href="{{ route('sources.edit', $s) }}">Edit</a> · <a href="{{ route('sources.import', $s) }}">Import</a> · <a href="{{ route('intelligence.platform', $s) }}">Intelligence</a></td>
         </tr>
         @endforeach
     </table>

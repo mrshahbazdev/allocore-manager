@@ -46,6 +46,10 @@ Signals in → Patterns → Recommendations → Implementation → Outcomes → 
 - `/trends` — `TrendDetector` compares challenge volume recent window vs prior window (7–90d), flags rising trends.
 - `/processes` — automation tracker: every process moves manual → assisted → semi_automated → automated, with a recorded history (`ProcessAssessment`).
 
+- `/sources/{id}/import` — bulk-import signals from a platform export (JSONL, one object per line). Connector path until platform-specific pullers exist.
+- `/measures/{id}` — per-measure effectiveness by cohort.
+- `php artisan allocore:refresh` — re-evaluates open challenges for every company; scheduled daily (`routes/console.php`), so recommendations stay fresh unattended.
+
 Seed demo data with `php artisan migrate:fresh --seed` (sources, catalog, companies, historic signals, learned patterns, tracked processes).
 
 ## Feature validation rule

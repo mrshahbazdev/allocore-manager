@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\IntelligenceController;
 use App\Http\Controllers\Web\ProcessController;
 use App\Http\Controllers\Web\RecommendationController;
 use App\Http\Controllers\Web\SignalController;
+use App\Http\Controllers\Web\SignalImportController;
 use App\Http\Controllers\Web\SourceController;
 use App\Http\Controllers\Web\TrendController;
 use Illuminate\Support\Facades\Route;
@@ -21,11 +22,14 @@ Route::get('/sources', [SourceController::class, 'index'])->name('sources.index'
 Route::get('/sources/new', [SourceController::class, 'create'])->name('sources.create');
 Route::post('/sources', [SourceController::class, 'store'])->name('sources.store');
 Route::get('/sources/{source}/edit', [SourceController::class, 'edit'])->name('sources.edit');
+Route::get('/sources/{source}/import', [SignalImportController::class, 'create'])->name('sources.import');
+Route::post('/sources/{source}/import', [SignalImportController::class, 'store'])->name('sources.import.store');
 Route::patch('/sources/{source}', [SourceController::class, 'update'])->name('sources.update');
 
 Route::get('/measures', [ActionMeasureController::class, 'index'])->name('measures.index');
 Route::get('/measures/new', [ActionMeasureController::class, 'create'])->name('measures.create');
 Route::post('/measures', [ActionMeasureController::class, 'store'])->name('measures.store');
+Route::get('/measures/{measure}', [ActionMeasureController::class, 'show'])->name('measures.show');
 Route::patch('/measures/{measure}', [ActionMeasureController::class, 'update'])->name('measures.update');
 
 Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
