@@ -7,6 +7,7 @@
     <div class="stat"><div class="num">{{ $companyCount }}</div><div class="lbl">Companies affected</div></div>
     <div class="stat"><div class="num">{{ $patterns->count() }}</div><div class="lbl">Measures measured</div></div>
     <div class="stat"><div class="num">{{ $lastSeenAt?->diffForHumans() ?? '—' }}</div><div class="lbl">Last seen</div></div>
+    <div class="stat"><div class="num">{{ $bestMeasure ? $bestMeasure->actionMeasure?->name : '—' }}</div><div class="lbl">Best proven measure {{ $bestMeasure?->effectiveRate() !== null ? '('.$bestMeasure->effectiveRate().'%)' : '' }}</div></div>
 </div>
 
 @if ($weekly->isNotEmpty())
