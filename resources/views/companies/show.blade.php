@@ -59,10 +59,7 @@
                     <input type="hidden" name="status" value="dismissed"><button class="secondary">Dismiss</button></form>
                 @endif
                 @if (in_array($r->status, ['accepted', 'implemented']) && ! $r->outcome)
-                <form class="inline" method="POST" action="{{ route('recommendations.outcome', $r) }}">@csrf
-                    <input type="hidden" name="result" value="success"><button>Success</button></form>
-                <form class="inline" method="POST" action="{{ route('recommendations.outcome', $r) }}">@csrf
-                    <input type="hidden" name="result" value="failure"><button class="secondary">Failed</button></form>
+                <a href="{{ route('recommendations.outcome.edit', $r) }}"><button>Measure outcome</button></a>
                 @endif
             </td>
         </tr>

@@ -20,11 +20,16 @@ class RecommendationController extends Controller
         return back()->with('status', "Recommendation {$data['status']}.");
     }
 
+    public function editOutcome(Recommendation $recommendation)
+    {
+        return view('recommendations.outcome', ['recommendation' => $recommendation]);
+    }
+
     public function outcome(Request $request, Recommendation $recommendation, LearningLoop $loop)
     {
         $data = $request->validate([
             'result' => ['required', 'in:success,failure,partial'],
-            'failure_reason' => ['nullable', 'string', 'max:255'],
+            'failure_reason' => ['nullable', 'string', 'max:255', 'required_if:result,failure'],
         ]);
 
         $loop->recordOutcome(
