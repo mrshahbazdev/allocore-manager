@@ -43,4 +43,20 @@
         @if ($coverageGaps->isEmpty())<tr><td colspan="4" class="muted">Every signalled challenge has at least one measure in the catalog.</td></tr>@endif
     </table>
 </div>
+<div class="card">
+    <h2>Confidence calibration <span class="muted">— predicted vs observed success</span></h2>
+    <table>
+        <tr><th>Confidence range</th><th>Recs</th><th>Predicted</th><th>Observed</th><th>Gap</th></tr>
+        @foreach ($calibration as $row)
+        <tr>
+            <td>{{ $row['range'] }}</td>
+            <td>{{ $row['count'] }}</td>
+            <td class="conf">{{ $row['predicted'] }}%</td>
+            <td class="conf">{{ $row['observed'] }}%</td>
+            <td><span class="badge b-{{ abs($row['predicted'] - $row['observed']) <= 15 ? 'success' : 'failure' }}">{{ round($row['observed'] - $row['predicted'], 1) }}%</span></td>
+        </tr>
+        @endforeach
+        @if ($calibration->isEmpty())<tr><td colspan="5" class="muted">No measured recommendations yet — calibration appears once outcomes exist.</td></tr>@endif
+    </table>
+</div>
 @endsection
