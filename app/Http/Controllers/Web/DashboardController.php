@@ -27,6 +27,8 @@ class DashboardController extends Controller
             ],
             'pendingRecs' => Recommendation::with('company', 'actionMeasure')->where('status', 'pending')->latest()->limit(10)->get(),
             'unmeasured' => Recommendation::with('company', 'actionMeasure')->where('status', 'implemented')->whereDoesntHave('outcome')->limit(10)->get(),
+            // Feeds that have gone quiet — a dead source starves the loop.
+            'staleSources' => Source::where('is_active', true)->whereDoesntHave('signals', fn ($q) => $q->where('occurred_at', '>=', now()->subDays(30)))->get(),
             'recentSignals' => Signal::with('source', 'company')->latest('occurred_at')->limit(15)->get(),
             'topPatterns' => Pattern::with('actionMeasure')->orderByDesc('attempts')->limit(10)->get(),
             'emergingTrends' => $detector->emerging(30)->take(5),

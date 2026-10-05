@@ -11,8 +11,12 @@
 
 <div class="card">
     <h2>Needs attention</h2>
-    @if ($pendingRecs->isEmpty() && $unmeasured->isEmpty())
+    @if ($pendingRecs->isEmpty() && $unmeasured->isEmpty() && $staleSources->isEmpty())
         <p class="muted">Nothing waiting — all recommendations decided and all implemented measures measured.</p>
+    @endif
+    @if ($staleSources->isNotEmpty())
+    <h3 style="margin:.75rem 0 .25rem">Quiet feeds ({{ $staleSources->count() }})</h3>
+    <p class="muted">No signal in 30+ days: {{ $staleSources->pluck('name')->implode(', ') }} — a dead feed starves the learning loop.</p>
     @endif
     @if ($pendingRecs->isNotEmpty())
     <h3 style="margin:.75rem 0 .25rem">Decisions waiting ({{ $pendingRecs->count() }})</h3>
