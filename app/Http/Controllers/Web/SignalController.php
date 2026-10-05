@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Recommendation;
 use App\Models\Signal;
 use App\Models\Source;
 use App\Services\RecommendationEngine;
@@ -22,8 +23,13 @@ class SignalController extends Controller
 
     public function show(Signal $signal)
     {
-        return view('signals.show', ['signal' => $signal->load('source', 'company')]);
+        return view('signals.show', [
+            'signal' => $signal->load('source', 'company'),
+            'recommendations' => Recommendation::where('signal_id', $signal->id)
+                ->with('actionMeasure', 'outcome')->get(),
+        ]);
     }
+
     public function create()
     {
         return view('signals.create', [
