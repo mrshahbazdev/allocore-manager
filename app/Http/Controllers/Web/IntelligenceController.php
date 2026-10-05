@@ -55,12 +55,28 @@ class IntelligenceController extends Controller
             ->limit(5)
             ->get();
 
+        $companies = Company::where('source_id', $source->id)
+            ->withCount(['signals as signals_30d' => fn ($q) => $q->where('occurred_at', '>=', now()->subDays(30))])
+            ->withCount(['recommendations as pending_recs' => fn ($q) => $q->where('status', 'pending')])
+            ->withCount(['recommendations as unmeasured' => fn ($q) => $q->where('status', 'implemented')->whereDoesntHave('outcome')])
+            ->withMax('signals', 'occurred_at')
+            ->get()
+            ->map(function ($c) {
+                $c->top_challenge = $c->signals()->whereNotNull('challenge_key')
+                    ->select('challenge_key', DB::raw('count(*) as n'))
+                    ->groupBy('challenge_key')->orderByDesc('n')->value('challenge_key');
+
+                return $c;
+            })
+            ->sortByDesc('signals_30d')->values();
+
         return view('intelligence.platform', [
             'source' => $source,
             'challengeCounts' => $challengeCounts,
             'effectiveness' => $effectiveness,
             'topUsers' => $topUsers,
             'risingChallenges' => $rising,
+            'companies' => $companies,
         ]);
     }
 

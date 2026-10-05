@@ -32,6 +32,23 @@
     </table>
 </div>
 <div class="card">
+    <h2>Company health</h2>
+    <table>
+        <tr><th>Company</th><th>Signals (30d)</th><th>Top challenge</th><th>Pending recs</th><th>Unmeasured</th><th>Last signal</th></tr>
+        @foreach ($companies as $c)
+        <tr>
+            <td><a href="{{ route('companies.show', $c) }}">{{ $c->name ?? $c->external_id }}</a></td>
+            <td>{{ $c->signals_30d }}</td>
+            <td>{{ $c->top_challenge ?? '—' }}</td>
+            <td>{{ $c->pending_recs }}</td>
+            <td>{{ $c->unmeasured }}</td>
+            <td class="muted">{{ $c->signals_max_occurred_at ? \Carbon\Carbon::parse($c->signals_max_occurred_at)->diffForHumans() : '—' }}</td>
+        </tr>
+        @endforeach
+        @if ($companies->isEmpty())<tr><td colspan="6" class="muted">No companies on this platform yet.</td></tr>@endif
+    </table>
+</div>
+<div class="card">
     <h2>Recommendation effectiveness</h2>
     @foreach (['success' => 'Succeeded', 'partial' => 'Partially succeeded', 'failure' => 'Failed'] as $key => $label)
         <p>{{ $label }}: <strong>{{ $effectiveness[$key] ?? 0 }}</strong></p>
