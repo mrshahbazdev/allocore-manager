@@ -103,7 +103,23 @@ class IntelligenceController extends Controller
             'patterns' => Pattern::with('actionMeasure')->orderByDesc('attempts')->limit(50)->get(),
             'coverageGaps' => $this->coverageGaps(),
             'calibration' => $this->calibration(),
+            'challengeAliases' => $this->challengeAliases(),
         ]);
+    }
+
+    /**
+     * Different platforms spell the same challenge differently
+     * ('missing_access_review' vs 'access_review_missing') — each split
+     * key fragments the pattern data. Flag keys whose token sets match.
+     */
+    private function challengeAliases()
+    {
+        return Signal::whereNotNull('challenge_key')
+            ->distinct()->pluck('challenge_key')
+            ->groupBy(fn ($key) => collect(explode('_', (string) $key))->sort()->implode('_'))
+            ->filter(fn ($group) => $group->count() > 1)
+            ->map(fn ($group) => $group->sort()->values())
+            ->values();
     }
 
     /**
