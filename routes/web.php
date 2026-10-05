@@ -50,6 +50,7 @@ Route::get('/clusters', [ClusterController::class, 'index'])->name('clusters.ind
 
 Route::get('/recommendations', [RecommendationController::class, 'index'])->name('recommendations.index');
 Route::get('/outcomes', [RecommendationController::class, 'outcomes'])->name('outcomes.index');
+Route::get('/recommendations/{recommendation}', [RecommendationController::class, 'show'])->name('recommendations.show');
 Route::patch('/recommendations/{recommendation}', [RecommendationController::class, 'update'])->name('recommendations.update');
 Route::get('/recommendations/{recommendation}/outcome', [RecommendationController::class, 'editOutcome'])->name('recommendations.outcome.edit');
 Route::post('/recommendations/{recommendation}/outcome', [RecommendationController::class, 'outcome'])->name('recommendations.outcome');

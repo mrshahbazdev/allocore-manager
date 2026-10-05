@@ -65,6 +65,10 @@
                     <input type="hidden" name="reason" value="">
                     <button class="secondary" onclick="this.form.reason.value = prompt('Optional — why dismiss? (e.g. no_budget, already_done)') ?? ''; return true">Dismiss</button></form>
                 @endif
+                @if ($r->status === 'accepted')
+                <form class="inline" method="POST" action="{{ route('recommendations.update', $r) }}">@csrf @method('PATCH')
+                    <input type="hidden" name="status" value="implemented"><button>Mark implemented</button></form>
+                @endif
                 @if (in_array($r->status, ['accepted', 'implemented']) && ! $r->outcome)
                 <a href="{{ route('recommendations.outcome.edit', $r) }}"><button>Measure outcome</button></a>
                 @endif

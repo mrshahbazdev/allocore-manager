@@ -12,17 +12,26 @@ use Illuminate\Support\Facades\DB;
 
 class CompanyController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $q = trim((string) $request->query('q', ''));
+
         return view('companies.index', [
             'companies' => Company::with('source')
                 ->withCount('signals', 'recommendations')
                 ->withCount(['recommendations as pending_recs_count' => fn ($q) => $q->where('status', 'pending')])
                 ->withCount(['recommendations as unmeasured_count' => fn ($q) => $q->where('status', 'implemented')->whereDoesntHave('outcome')])
                 ->withMax('signals', 'occurred_at')
+                ->when($q !== '', fn ($query) => $query->where(function ($w) use ($q) {
+                    $w->where('name', 'like', "%{$q}%")
+                        ->orWhere('external_id', 'like', "%{$q}%")
+                        ->orWhere('industry', 'like', "%{$q}%");
+                }))
                 ->orderByDesc('pending_recs_count')
                 ->orderByDesc('unmeasured_count')
-                ->paginate(25),
+                ->paginate(25)
+                ->withQueryString(),
+            'q' => $q,
         ]);
     }
 

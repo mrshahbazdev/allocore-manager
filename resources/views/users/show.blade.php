@@ -1,6 +1,11 @@
 @extends('layouts.app')
 @section('content')
 <h1>User {{ $externalUserId }}</h1>
+<div class="stat-grid">
+    <div class="stat"><div class="num">{{ $signals->total() }}</div><div class="lbl">Signals</div></div>
+    <div class="stat"><div class="num">{{ $companyCount }}</div><div class="lbl">Companies touched</div></div>
+    <div class="stat"><div class="num">{{ $topChallenges->first()?->challenge_key ?? '—' }}</div><div class="lbl">Top challenge{{ $topChallenges->first() ? ' ('.$topChallenges->first()->total.')' : '' }}</div></div>
+</div>
 <div class="card">
     <h2>Best next actions for their companies</h2>
     <table>
