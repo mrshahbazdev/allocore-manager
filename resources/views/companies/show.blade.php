@@ -6,6 +6,14 @@
     @if ($company->situation) · {{ implode(', ', $company->situation) }}@endif
 </p>
 
+@if ($bestNextAction)
+<div class="card" style="border:2px solid #166534">
+    <h2>Best next action</h2>
+    <p style="font-size:1.1rem;font-weight:700;margin:.25rem 0">{{ $bestNextAction->actionMeasure?->name }}</p>
+    <p class="muted">{{ $bestNextAction->rationale['message'] ?? '' }}</p>
+    <p class="conf" style="margin-top:.25rem">{{ $bestNextAction->confidence }}% confidence · {{ $bestNextAction->challenge_key }}</p>
+</div>
+@endif
 <div class="card">
     <h2>Recommended next actions</h2>
     <form method="POST" action="{{ route('companies.refresh', $company) }}" class="inline" style="margin-bottom:.75rem">

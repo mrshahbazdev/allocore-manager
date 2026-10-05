@@ -16,7 +16,7 @@ class CompanyController extends Controller
         ]);
     }
 
-    public function show(Company $company, CompanySimilarity $similarity)
+    public function show(Company $company, CompanySimilarity $similarity, RecommendationEngine $engine)
     {
         $similar = $similarity->similarTo($company)->take(10)->map(fn (Company $c) => [
             'company' => $c,
@@ -27,6 +27,7 @@ class CompanyController extends Controller
             'company' => $company->load('source'),
             'recommendations' => $company->recommendations()->with('actionMeasure', 'outcome')->latest()->get(),
             'similar' => $similar,
+            'bestNextAction' => $engine->bestNextAction($company),
             'signals' => $company->signals()->latest('occurred_at')->limit(20)->get(),
         ]);
     }

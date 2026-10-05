@@ -33,10 +33,12 @@ class RecommendationEngine
             ->filter(fn (Pattern $p) => $p->actionMeasure?->is_active)
             ->sortByDesc(fn (Pattern $p) => $p->successRate() ?? 0);
 
+        // Never re-issue a measure that is pending or was already dismissed
+        // for this challenge on this company.
         $existing = Recommendation::query()
             ->where('company_id', $company->id)
             ->where('challenge_key', $challengeKey)
-            ->where('status', Recommendation::STATUS_PENDING)
+            ->whereIn('status', [Recommendation::STATUS_PENDING, Recommendation::STATUS_DISMISSED])
             ->pluck('action_measure_id');
 
         return $patterns
@@ -77,8 +79,43 @@ class RecommendationEngine
             ->distinct()
             ->pluck('challenge_key');
 
-        return $challenges->flatMap(
+        $created = $challenges->flatMap(
             fn (string $key) => $this->recommendFor($company, $key)
         );
+
+        $this->expireStale($company, $challenges);
+
+        return $created;
+    }
+
+    /**
+     * Auto-dismiss pending recommendations whose challenge has gone quiet —
+     * stale advice is worse than no advice.
+     */
+    public function expireStale(Company $company, ?Collection $activeChallenges = null, int $quietDays = 90): int
+    {
+        $active = $activeChallenges ?? $company->signals()
+            ->whereNotNull('challenge_key')
+            ->where('occurred_at', '>=', now()->subDays($quietDays))
+            ->distinct()
+            ->pluck('challenge_key');
+
+        return $company->recommendations()
+            ->where('status', Recommendation::STATUS_PENDING)
+            ->whereNotIn('challenge_key', $active)
+            ->update(['status' => Recommendation::STATUS_DISMISSED]);
+    }
+
+    /**
+     * The one question the system exists to answer: the best next action
+     * for this specific company right now.
+     */
+    public function bestNextAction(Company $company): ?Recommendation
+    {
+        return $company->recommendations()
+            ->with('actionMeasure')
+            ->where('status', Recommendation::STATUS_PENDING)
+            ->orderByDesc('confidence')
+            ->first();
     }
 }
