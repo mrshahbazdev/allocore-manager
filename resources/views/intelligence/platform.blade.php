@@ -26,7 +26,7 @@
     <table>
         <tr><th>User</th><th>Signals</th></tr>
         @foreach ($topUsers as $row)
-        <tr><td>{{ $row->external_user_id }}</td><td>{{ $row->total }}</td></tr>
+        <tr><td><a href="{{ route('users.show', $row->external_user_id) }}">{{ $row->external_user_id }}</a></td><td>{{ $row->total }}</td></tr>
         @endforeach
         @if ($topUsers->isEmpty())<tr><td colspan="2" class="muted">No user-attributed signals yet.</td></tr>@endif
     </table>

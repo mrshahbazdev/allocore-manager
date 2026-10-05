@@ -36,6 +36,8 @@
             <td>@if ($s->company)<a href="{{ route('companies.show', $s->company) }}">{{ $s->company->name }}</a>@else —@endif</td>
             <td class="muted">{{ $s->external_user_id ?? '—' }}</td>
             <td class="muted"><a href="{{ route('signals.show', $s) }}">{{ $s->payload ? json_encode($s->payload) : '—' }}</a></td>
+            <td class="muted">@if ($s->external_user_id)<a href="{{ route('users.show', $s->external_user_id) }}">{{ $s->external_user_id }}</a>@else —@endif</td>
+            <td class="muted">{{ $s->payload ? json_encode($s->payload) : '—' }}</td>
         </tr>
         @endforeach
         @if ($signals->isEmpty())<tr><td colspan="7" class="muted">No signals yet — <a href="{{ route('signals.create') }}">record one</a>.</td></tr>@endif
