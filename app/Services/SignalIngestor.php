@@ -59,7 +59,11 @@ class SignalIngestor
             'company_id' => $company?->id,
             'external_user_id' => $userId,
             'type' => $data['type'],
-            'challenge_key' => $data['challenge_key'] ?? null,
+            // Normalize at ingest so 'GDPR Breach' and 'gdpr_breach' never
+            // split the learned history across two vocabulary keys.
+            'challenge_key' => isset($data['challenge_key'])
+                ? strtolower((string) preg_replace('/\s+/', '_', trim((string) $data['challenge_key'])))
+                : null,
             'payload' => $data['payload'] ?? null,
             'occurred_at' => $occurredAt,
         ]);

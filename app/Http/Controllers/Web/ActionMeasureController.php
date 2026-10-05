@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\ActionMeasure;
 use App\Models\Outcome;
+use App\Models\Signal;
 use Illuminate\Http\Request;
 
 class ActionMeasureController extends Controller
@@ -34,6 +35,10 @@ class ActionMeasureController extends Controller
         return view('measures.index', [
             'measures' => $measures,
             'failing' => $failing,
+            'measures' => ActionMeasure::withCount('recommendations')->latest()->get(),
+            // Challenges that have actually been signalled — a measure whose
+            // entire address list is unobserved is catalog dead weight.
+            'signalled' => Signal::whereNotNull('challenge_key')->distinct()->pluck('challenge_key'),
         ]);
     }
 

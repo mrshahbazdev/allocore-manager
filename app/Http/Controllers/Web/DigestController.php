@@ -16,9 +16,12 @@ class DigestController extends Controller
 {
     public function index()
     {
-        $since = now()->subDay();
+        $days = (int) request()->query('days', 1);
+        $days = in_array($days, [1, 3, 7, 14]) ? $days : 1;
+        $since = now()->subDays($days);
 
         return view('digest', [
+            'days' => $days,
             'since' => $since,
             'signals' => Signal::where('occurred_at', '>=', $since)->count(),
             'topChallenges' => Signal::where('occurred_at', '>=', $since)
