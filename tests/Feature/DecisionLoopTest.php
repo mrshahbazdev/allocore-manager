@@ -50,7 +50,7 @@ class DecisionLoopTest extends TestCase
 
         $rec = Recommendation::first();
         $this->assertNotNull($rec);
-        $this->assertEquals(75.0, $rec->confidence);
+        $this->assertEquals(50.0, $rec->confidence);
         $this->assertStringContainsString('75%', $rec->rationale['message']);
     }
 

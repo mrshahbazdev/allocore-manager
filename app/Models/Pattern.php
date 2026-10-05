@@ -71,4 +71,15 @@ class Pattern extends Model
 
         return $rate === null ? null : round($rate * $this->freshnessFactor() * $this->adoptionFactor(), 1);
     }
+
+    /**
+     * Evidence-adjusted rate: shrinks effectiveRate toward zero when it rests
+     * on few attempts, so a 1/1 success (100%) can't outrank 9/10 (90%).
+     */
+    public function evidenceAdjustedRate(): ?float
+    {
+        $rate = $this->effectiveRate();
+
+        return $rate === null ? null : round($rate * $this->attempts / ($this->attempts + 2), 1);
+    }
 }
