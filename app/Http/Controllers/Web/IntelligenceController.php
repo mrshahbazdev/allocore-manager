@@ -114,6 +114,13 @@ class IntelligenceController extends Controller
             // Learning performance: how fast new evidence is being absorbed.
             'outcomes7d' => Outcome::where('measured_at', '>=', now()->subDays(7))->count(),
             'outcomesPrev7d' => Outcome::whereBetween('measured_at', [now()->subDays(14), now()->subDays(7)])->count(),
+            // Why advice gets ignored: dismissal reasons learned from
+            // pattern failure_reasons (keys prefixed 'dismissed_').
+            'dismissReasons' => Pattern::whereNotNull('failure_reasons')
+                ->pluck('failure_reasons')
+                ->flatMap(fn ($r) => collect($r ?? [])->filter(fn ($c, $k) => str_starts_with($k, 'dismissed_')))
+                ->reduce(fn ($agg, $c, $k) => $agg->put($k, ($agg[$k] ?? 0) + $c), collect())
+                ->sortDesc()->take(10),
         ]);
     }
 
