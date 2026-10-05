@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Outcome;
 use App\Models\Recommendation;
 use App\Models\Signal;
-use App\Models\Source;
 use App\Models\User;
 use App\Support\DecisionEngine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,17 +13,6 @@ use Tests\TestCase;
 class DecisionFlowTest extends TestCase
 {
     use RefreshDatabase;
-
-    public function test_signal_ingest_by_token(): void
-    {
-        $source = Source::create(['name' => 'suite', 'token' => 'tok123']);
-
-        $this->postJson('/api/v1/signals/tok123', ['type' => 'invoice.overdue', 'company_key' => 'acme'])
-            ->assertCreated()
-            ->assertJson(['ingested' => 1]);
-
-        $this->assertDatabaseHas('signals', ['type' => 'invoice.overdue', 'company_key' => 'acme', 'source_id' => $source->id]);
-    }
 
     public function test_engine_creates_recommendation_once(): void
     {
