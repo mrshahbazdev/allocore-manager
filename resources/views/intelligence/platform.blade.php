@@ -12,6 +12,26 @@
     </table>
 </div>
 <div class="card">
+    <h2>Rising challenges (last 30 days) — feature improvement opportunities</h2>
+    <table>
+        <tr><th>Challenge</th><th>Signals</th></tr>
+        @foreach ($risingChallenges as $row)
+        <tr><td>{{ $row->challenge_key }}</td><td>{{ $row->total }}</td></tr>
+        @endforeach
+        @if ($risingChallenges->isEmpty())<tr><td colspan="2" class="muted">Nothing rising recently.</td></tr>@endif
+    </table>
+</div>
+<div class="card">
+    <h2>Most active users</h2>
+    <table>
+        <tr><th>User</th><th>Signals</th></tr>
+        @foreach ($topUsers as $row)
+        <tr><td>{{ $row->external_user_id }}</td><td>{{ $row->total }}</td></tr>
+        @endforeach
+        @if ($topUsers->isEmpty())<tr><td colspan="2" class="muted">No user-attributed signals yet.</td></tr>@endif
+    </table>
+</div>
+<div class="card">
     <h2>Recommendation effectiveness</h2>
     @foreach (['success' => 'Succeeded', 'partial' => 'Partially succeeded', 'failure' => 'Failed'] as $key => $label)
         <p>{{ $label }}: <strong>{{ $effectiveness[$key] ?? 0 }}</strong></p>
