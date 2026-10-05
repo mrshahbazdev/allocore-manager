@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Signal;
 use App\Models\Source;
 use App\Services\RecommendationEngine;
 use App\Services\SignalIngestor;
@@ -10,6 +11,15 @@ use Illuminate\Http\Request;
 
 class SignalController extends Controller
 {
+    public function index()
+    {
+        return view('signals.index', [
+            'signals' => Signal::with('source', 'company')
+                ->latest('occurred_at')
+                ->paginate(50),
+        ]);
+    }
+
     public function create()
     {
         return view('signals.create', [
