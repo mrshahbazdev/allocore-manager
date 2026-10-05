@@ -2,6 +2,9 @@
 @section('content')
 <h1>Challenges</h1>
 <div class="card">
+    <form method="GET" action="{{ route('challenges.index') }}" style="margin-bottom:.75rem">
+        <input type="text" name="q" value="{{ $q ?? '' }}" placeholder="Filter challenge keys…" style="max-width:22rem">
+    </form>
     <table>
         <tr><th>Key</th><th>Signals</th><th>Companies</th><th>Last seen</th><th>Coverage</th></tr>
         @foreach ($challenges as $c)
