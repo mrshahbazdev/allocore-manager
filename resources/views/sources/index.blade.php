@@ -8,7 +8,7 @@
         @foreach ($sources as $s)
         <tr>
             <td><code>{{ $s->key }}</code></td>
-            <td>{{ $s->name }}</td>
+            <td><a href="{{ route('sources.show', $s) }}">{{ $s->name }}</a></td>
             <td>{{ $s->type }}</td>
             <td>{{ $s->companies_count }}</td>
             <td>{{ $s->signals_count }}</td>

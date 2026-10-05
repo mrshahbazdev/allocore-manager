@@ -24,6 +24,7 @@ Route::post('/signals', [SignalController::class, 'store'])->name('signals.store
 Route::get('/sources', [SourceController::class, 'index'])->name('sources.index');
 Route::get('/sources/new', [SourceController::class, 'create'])->name('sources.create');
 Route::post('/sources', [SourceController::class, 'store'])->name('sources.store');
+Route::get('/sources/{source}', [SourceController::class, 'show'])->name('sources.show');
 Route::get('/sources/{source}/edit', [SourceController::class, 'edit'])->name('sources.edit');
 Route::get('/sources/{source}/import', [SignalImportController::class, 'create'])->name('sources.import');
 Route::post('/sources/{source}/import', [SignalImportController::class, 'store'])->name('sources.import.store');

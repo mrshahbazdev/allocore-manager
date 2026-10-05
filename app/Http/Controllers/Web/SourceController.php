@@ -37,6 +37,31 @@ class SourceController extends Controller
         return redirect()->route('sources.index')->with('status', 'Source registered.');
     }
 
+    public function show(Source $source)
+    {
+        $signals = $source->signals()->with('company')->latest('occurred_at')->get();
+
+        // Signals per week for the last 12 weeks.
+        $weekly = $signals->where('occurred_at', '>=', now()->subWeeks(12))
+            ->groupBy(fn ($s) => $s->occurred_at->startOfWeek()->toDateString())
+            ->map->count()
+            ->sortKeys();
+
+        $byType = $signals->groupBy('type')->map->count()->sortDesc();
+        $byChallenge = $signals->whereNotNull('challenge_key')
+            ->groupBy('challenge_key')->map->count()->sortDesc();
+
+        return view('sources.show', [
+            'source' => $source,
+            'signals' => $signals->take(30),
+            'weekly' => $weekly,
+            'byType' => $byType,
+            'byChallenge' => $byChallenge,
+            'companies' => $source->companies()->orderBy('name')->get(),
+            'lastSeenAt' => $signals->first()?->occurred_at,
+        ]);
+    }
+
     public function edit(Source $source)
     {
         return view('sources.edit', ['source' => $source]);
