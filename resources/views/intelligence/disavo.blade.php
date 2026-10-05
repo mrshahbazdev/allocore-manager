@@ -10,6 +10,15 @@
     </div>
 </div>
 <div class="card">
+    <h2>Growth indicators</h2>
+    <div class="stat-grid">
+        <div class="stat"><div class="num">{{ $newCompanies30d }}</div><div class="lbl">New companies (30d)</div></div>
+        <div class="stat"><div class="num">{{ $signals30d }}</div><div class="lbl">Signals (30d)</div></div>
+        <div class="stat"><div class="num">{{ $signalsPrev30d }}</div><div class="lbl">Signals (prior 30d)</div></div>
+        <div class="stat"><div class="num">{{ $adoptionRate !== null ? $adoptionRate.'%' : '—' }}</div><div class="lbl">Recommendation adoption</div></div>
+    </div>
+</div>
+<div class="card">
     <h2>Performance</h2>
     <div class="stat-grid">
         <div class="stat"><div class="num">{{ $recommendationsIssued }}</div><div class="lbl">Recommendations issued</div></div>

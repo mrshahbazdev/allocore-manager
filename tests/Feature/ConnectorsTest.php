@@ -70,3 +70,5 @@ class ConnectorsTest extends TestCase
             ->assertOk()->assertSee('growing')->assertSee('75%');
     }
 }
+
+// appended below

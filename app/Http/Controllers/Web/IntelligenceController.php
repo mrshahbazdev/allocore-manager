@@ -36,10 +36,31 @@ class IntelligenceController extends Controller
             ->groupBy('result')
             ->pluck('total', 'result');
 
+        $topUsers = Signal::where('source_id', $source->id)
+            ->whereNotNull('external_user_id')
+            ->select('external_user_id', DB::raw('count(*) as total'))
+            ->groupBy('external_user_id')
+            ->orderByDesc('total')
+            ->limit(10)
+            ->get();
+
+        // Feature improvement opportunities: challenges rising on this
+        // platform in the last 30 days vs the prior 30.
+        $rising = Signal::where('source_id', $source->id)
+            ->whereNotNull('challenge_key')
+            ->where('occurred_at', '>=', now()->subDays(30))
+            ->select('challenge_key', DB::raw('count(*) as total'))
+            ->groupBy('challenge_key')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+
         return view('intelligence.platform', [
             'source' => $source,
             'challengeCounts' => $challengeCounts,
             'effectiveness' => $effectiveness,
+            'topUsers' => $topUsers,
+            'risingChallenges' => $rising,
         ]);
     }
 
@@ -53,6 +74,12 @@ class IntelligenceController extends Controller
             'signals' => Signal::count(),
             'recommendations' => Recommendation::count(),
             'outcomes' => Outcome::count(),
+            'outcomeCoverage' => Recommendation::count() > 0
+                ? round(Recommendation::whereHas('outcome')->count() / Recommendation::count() * 100, 1)
+                : null,
+            'adoptionRate' => Recommendation::count() > 0
+                ? round(Recommendation::whereIn('status', ['accepted', 'implemented'])->count() / Recommendation::count() * 100, 1)
+                : null,
             'overallSuccessRate' => Outcome::count() > 0
                 ? round(Outcome::whereIn('result', ['success', 'partial'])->count() / Outcome::count() * 100, 1)
                 : null,
@@ -75,6 +102,12 @@ class IntelligenceController extends Controller
             'outcomesMeasured' => $outcomes,
             'successRate' => $outcomes > 0
                 ? round(Outcome::whereIn('result', ['success', 'partial'])->count() / $outcomes * 100, 1)
+                : null,
+            'newCompanies30d' => Company::where('created_at', '>=', now()->subDays(30))->count(),
+            'signals30d' => Signal::where('occurred_at', '>=', now()->subDays(30))->count(),
+            'signalsPrev30d' => Signal::whereBetween('occurred_at', [now()->subDays(60), now()->subDays(30)])->count(),
+            'adoptionRate' => Recommendation::count() > 0
+                ? round(Recommendation::whereIn('status', ['accepted', 'implemented'])->count() / Recommendation::count() * 100, 1)
                 : null,
             'emergingRisks' => Signal::whereNotNull('challenge_key')
                 ->where('occurred_at', '>=', now()->subDays(30))

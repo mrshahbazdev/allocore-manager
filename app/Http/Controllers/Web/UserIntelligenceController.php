@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Http\Controllers\Web;
+
+use App\Http\Controllers\Controller;
+use App\Models\Recommendation;
+use App\Models\Signal;
+use Illuminate\Support\Facades\DB;
+
+class UserIntelligenceController extends Controller
+{
+    /**
+     * Users across the ecosystem (by the source's own user id), with their
+     * activity and the best next action waiting for their company.
+     */
+    public function index()
+    {
+        $users = Signal::whereNotNull('external_user_id')
+            ->select('external_user_id', 'source_id', DB::raw('count(*) as total'), DB::raw('max(occurred_at) as last_seen'))
+            ->groupBy('external_user_id', 'source_id')
+            ->orderByDesc('total')
+            ->paginate(25);
+
+        return view('users.index', ['users' => $users]);
+    }
+
+    public function show(string $externalUserId)
+    {
+        $signals = Signal::where('external_user_id', $externalUserId)
+            ->with('source', 'company')
+            ->latest('occurred_at')
+            ->paginate(50);
+
+        $companyIds = $signals->pluck('company_id')->filter()->unique();
+        $recommendations = Recommendation::whereIn('company_id', $companyIds)
+            ->with('actionMeasure', 'company')
+            ->where('status', Recommendation::STATUS_PENDING)
+            ->orderByDesc('confidence')
+            ->get();
+
+        return view('users.show', [
+            'externalUserId' => $externalUserId,
+            'signals' => $signals,
+            'recommendations' => $recommendations,
+        ]);
+    }
+}

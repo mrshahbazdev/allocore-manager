@@ -7,6 +7,8 @@
     <div class="stat"><div class="num">{{ $recommendations }}</div><div class="lbl">Recommendations</div></div>
     <div class="stat"><div class="num">{{ $outcomes }}</div><div class="lbl">Outcomes</div></div>
     <div class="stat"><div class="num">{{ $overallSuccessRate !== null ? $overallSuccessRate.'%' : '—' }}</div><div class="lbl">Success rate</div></div>
+    <div class="stat"><div class="num">{{ $outcomeCoverage !== null ? $outcomeCoverage.'%' : '—' }}</div><div class="lbl">Outcome coverage</div></div>
+    <div class="stat"><div class="num">{{ $adoptionRate !== null ? $adoptionRate.'%' : '—' }}</div><div class="lbl">Adoption rate</div></div>
 </div>
 <div class="card">
     <h2>Patterns</h2>
