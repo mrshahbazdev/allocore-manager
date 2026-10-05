@@ -20,6 +20,7 @@ Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::get('/signals', [SignalController::class, 'index'])->name('signals.index');
 Route::get('/signals/new', [SignalController::class, 'create'])->name('signals.create');
+Route::get('/signals/{signal}', [SignalController::class, 'show'])->name('signals.show');
 Route::post('/signals', [SignalController::class, 'store'])->name('signals.store');
 
 Route::get('/sources', [SourceController::class, 'index'])->name('sources.index');

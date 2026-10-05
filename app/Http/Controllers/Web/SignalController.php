@@ -20,6 +20,10 @@ class SignalController extends Controller
         ]);
     }
 
+    public function show(Signal $signal)
+    {
+        return view('signals.show', ['signal' => $signal->load('source', 'company')]);
+    }
     public function create()
     {
         return view('signals.create', [
