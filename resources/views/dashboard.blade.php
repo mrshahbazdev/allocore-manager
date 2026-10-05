@@ -9,6 +9,17 @@
     <div class="stat"><div class="num">{{ $stats['outcomes'] }}</div><div class="lbl">Outcomes measured</div></div>
 </div>
 
+@if ($weeklySignals->isNotEmpty())
+<div class="card">
+    <h2>Activity pulse (last 8 weeks)</h2>
+    <table>
+        <tr>@foreach ($weeklySignals as $week => $count)<th>{{ \Illuminate\Support\Carbon::parse($week)->format('M d') }}</th>@endforeach</tr>
+        <tr>@foreach ($weeklySignals as $count)<td>{{ $count }}</td>@endforeach</tr>
+    </table>
+    <p class="muted" style="margin-top:.4rem">Signals per week across the whole ecosystem.</p>
+</div>
+@endif
+
 <div class="card">
     <h2>Needs attention</h2>
     @if ($pendingRecs->isEmpty() && $unmeasured->isEmpty())

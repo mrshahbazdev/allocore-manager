@@ -30,6 +30,12 @@ class DashboardController extends Controller
             'recentSignals' => Signal::with('source', 'company')->latest('occurred_at')->limit(15)->get(),
             'topPatterns' => Pattern::with('actionMeasure')->orderByDesc('attempts')->limit(10)->get(),
             'emergingTrends' => $detector->emerging(30)->take(5),
+            // Activity pulse: signals per week for the last 8 weeks.
+            'weeklySignals' => Signal::where('occurred_at', '>=', now()->subWeeks(8))
+                ->get()
+                ->groupBy(fn ($s) => $s->occurred_at->startOfWeek()->toDateString())
+                ->map->count()
+                ->sortKeys(),
         ]);
     }
 }
