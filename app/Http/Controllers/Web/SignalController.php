@@ -25,6 +25,9 @@ class SignalController extends Controller
             'challenge_key' => ['nullable', 'string', 'max:100'],
             'user_id' => ['nullable', 'string', 'max:100'],
             'occurred_at' => ['nullable', 'date'],
+            'measure_key' => ['nullable', 'string', 'max:100'],
+            'result' => ['nullable', 'in:success,failure,partial'],
+            'failure_reason' => ['nullable', 'string', 'max:255'],
             'company_external_id' => ['nullable', 'string', 'max:100'],
             'company_name' => ['nullable', 'string', 'max:255'],
             'company_industry' => ['nullable', 'string', 'max:100'],
@@ -36,8 +39,15 @@ class SignalController extends Controller
         $situation = collect(explode(',', $data['company_situation'] ?? ''))
             ->map(fn ($t) => trim($t))->filter()->values()->all();
 
+        $payload = array_filter([
+            'measure_key' => $data['measure_key'] ?? null,
+            'result' => $data['result'] ?? null,
+            'failure_reason' => $data['failure_reason'] ?? null,
+        ]);
+
         $signal = $ingestor->ingest(Source::findOrFail($data['source_id']), [
             'type' => $data['type'],
+            'payload' => $payload ?: null,
             'challenge_key' => $data['challenge_key'] ?? null,
             'user_id' => $data['user_id'] ?? null,
             'occurred_at' => $data['occurred_at'] ?? null,

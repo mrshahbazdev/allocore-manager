@@ -26,6 +26,15 @@
                 <input name="occurred_at" type="datetime-local">
             </div>
         </div>
+        <h2 style="margin-top:1rem">Lifecycle fields <span class="muted">(action.implemented / outcome.measured only)</span></h2>
+        <div class="grid-2">
+            <div><label>Measure key</label><input name="measure_key" placeholder="quarterly_access_reviews"></div>
+            <div>
+                <label>Result</label>
+                <select name="result"><option value="">—</option><option>success</option><option>partial</option><option>failure</option></select>
+            </div>
+            <div><label>Failure reason</label><input name="failure_reason"></div>
+        </div>
         <h2 style="margin-top:1rem">Company context</h2>
         <div class="grid-2">
             <div>
