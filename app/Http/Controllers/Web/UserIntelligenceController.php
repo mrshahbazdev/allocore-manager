@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Recommendation;
 use App\Models\Signal;
+use App\Models\Source;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class UserIntelligenceController extends Controller
@@ -13,15 +15,23 @@ class UserIntelligenceController extends Controller
      * Users across the ecosystem (by the source's own user id), with their
      * activity and the best next action waiting for their company.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $sourceId = $request->query('source_id', '');
+
         $users = Signal::whereNotNull('external_user_id')
+            ->when($sourceId !== '', fn ($q) => $q->where('source_id', $sourceId))
             ->select('external_user_id', 'source_id', DB::raw('count(*) as total'), DB::raw('max(occurred_at) as last_seen'))
             ->groupBy('external_user_id', 'source_id')
             ->orderByDesc('total')
-            ->paginate(25);
+            ->paginate(25)
+            ->withQueryString();
 
-        return view('users.index', ['users' => $users]);
+        return view('users.index', [
+            'users' => $users,
+            'sourceId' => $sourceId,
+            'sources' => Source::orderBy('name')->get(),
+        ]);
     }
 
     public function show(string $externalUserId)
