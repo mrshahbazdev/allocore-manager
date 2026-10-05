@@ -22,16 +22,23 @@ class SignalIngestor
         $company = null;
 
         if ($externalCompanyId = Arr::get($data, 'company.external_id')) {
-            $company = Company::updateOrCreate(
-                ['source_id' => $source->id, 'external_id' => (string) $externalCompanyId],
-                array_filter([
-                    'name' => Arr::get($data, 'company.name'),
-                    'industry' => Arr::get($data, 'company.industry'),
-                    'size' => Arr::get($data, 'company.size'),
-                    'maturity' => Arr::get($data, 'company.maturity'),
-                    'situation' => Arr::get($data, 'company.situation'),
-                ], fn ($v) => $v !== null)
+            $company = Company::firstOrNew(
+                ['source_id' => $source->id, 'external_id' => (string) $externalCompanyId]
             );
+            $company->fill(array_filter([
+                'name' => Arr::get($data, 'company.name'),
+                'industry' => Arr::get($data, 'company.industry'),
+                'size' => Arr::get($data, 'company.size'),
+                'maturity' => Arr::get($data, 'company.maturity'),
+            ], fn ($v) => $v !== null));
+
+            // Situation tags accumulate — a platform reporting one tag must
+            // not wipe tags learned from other signals or sources.
+            $newTags = Arr::get($data, 'company.situation');
+            if (is_array($newTags)) {
+                $company->situation = array_values(array_unique(array_merge($company->situation ?? [], $newTags)));
+            }
+            $company->save();
         }
 
         $signal = Signal::create([
