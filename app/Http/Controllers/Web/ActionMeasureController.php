@@ -37,6 +37,8 @@ class ActionMeasureController extends Controller
                 ? round((clone $outcomes)->whereIn('result', ['success', 'partial'])->count() / $outcomes->count() * 100, 1)
                 : null,
             'patterns' => $measure->patterns()->orderByDesc('attempts')->get(),
+            'recentRecommendations' => $measure->recommendations()
+                ->with('company', 'outcome')->latest()->limit(15)->get(),
         ]);
     }
 
