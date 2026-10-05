@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActionMeasure;
 use App\Models\Signal;
 use App\Models\Source;
 use App\Services\RecommendationEngine;
@@ -45,6 +46,11 @@ class SignalController extends Controller
     {
         return view('signals.create', [
             'sources' => Source::where('is_active', true)->get(),
+            // Vocabulary helpers — typing a known key keeps the
+            // challenge/measure vocabularies from splitting.
+            'challengeKeys' => Signal::whereNotNull('challenge_key')->distinct()
+                ->orderBy('challenge_key')->pluck('challenge_key'),
+            'measureKeys' => ActionMeasure::orderBy('key')->pluck('key'),
         ]);
     }
 
