@@ -12,7 +12,29 @@ class ActionMeasureController extends Controller
 {
     public function index()
     {
+        $measures = ActionMeasure::withCount('recommendations')
+            ->with('patterns')
+            ->latest()
+            ->get();
+
+        $failing = $measures->map(function (ActionMeasure $m) {
+            $attempts = $m->patterns->sum('attempts');
+            $failures = $m->patterns->sum('failures');
+            $m->aggregate_attempts = $attempts;
+            $m->aggregate_success_rate = $attempts > 0
+                ? round(($attempts - $failures) / $attempts * 100, 1)
+                : null;
+
+            return $m;
+        })->filter(fn ($m) => $m->aggregate_attempts >= 3
+            && $m->aggregate_success_rate !== null
+            && $m->aggregate_success_rate < 50)
+            ->sortBy('aggregate_success_rate')
+            ->values();
+
         return view('measures.index', [
+            'measures' => $measures,
+            'failing' => $failing,
             'measures' => ActionMeasure::withCount('recommendations')->latest()->get(),
             // Challenges that have actually been signalled — a measure whose
             // entire address list is unobserved is catalog dead weight.

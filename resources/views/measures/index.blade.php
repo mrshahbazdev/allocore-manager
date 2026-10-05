@@ -1,6 +1,23 @@
 @extends('layouts.app')
 @section('content')
 <h1>Action measure catalog</h1>
+@if ($failing->isNotEmpty())
+<div class="card" style="border:1px solid #fecaca">
+    <h2>Failing measures — what doesn't work</h2>
+    <p class="muted">At least 3 attempts and under 50% success. Worth revising or retiring.</p>
+    <table>
+        <tr><th>Measure</th><th>Attempts</th><th>Success</th></tr>
+        @foreach ($failing as $m)
+        <tr>
+            <td><a href="{{ route('measures.show', $m) }}">{{ $m->name }}</a></td>
+            <td>{{ $m->aggregate_attempts }}</td>
+            <td><span class="badge b-failure">{{ $m->aggregate_success_rate }}%</span></td>
+        </tr>
+        @endforeach
+    </table>
+</div>
+@endif
+
 <div class="card">
     <a href="{{ route('measures.create') }}"><button>New measure</button></a>
     <table style="margin-top:.75rem">
