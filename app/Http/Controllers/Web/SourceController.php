@@ -11,7 +11,10 @@ class SourceController extends Controller
     public function index()
     {
         return view('sources.index', [
-            'sources' => Source::withCount('companies', 'signals')->latest()->get(),
+            'sources' => Source::withCount('companies', 'signals')
+                ->withMax('signals', 'occurred_at')
+                ->latest()
+                ->get(),
         ]);
     }
 
