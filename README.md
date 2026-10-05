@@ -40,6 +40,13 @@ Signals in → Patterns → Recommendations → Implementation → Outcomes → 
 - `/intelligence/platform/{source}` — what a platform manager sees: common challenges, recommendation effectiveness.
 - `/intelligence/allocore` — what the Allocore team sees: patterns, model quality, success rates.
 - `/intelligence/disavo` — what DISAVO sees: strategic metrics, emerging risks.
+- `/sources` — register/manage data providers (ingest tokens shown for future connectors).
+- `/measures` — action catalog admins maintain.
+- `/clusters` — companies grouped by similarity cohort (situation + maturity).
+- `/trends` — `TrendDetector` compares challenge volume recent window vs prior window (7–90d), flags rising trends.
+- `/processes` — automation tracker: every process moves manual → assisted → semi_automated → automated, with a recorded history (`ProcessAssessment`).
+
+Seed demo data with `php artisan migrate:fresh --seed` (sources, catalog, companies, historic signals, learned patterns, tracked processes).
 
 ## Feature validation rule
 
