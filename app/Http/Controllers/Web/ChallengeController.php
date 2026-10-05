@@ -64,6 +64,15 @@ class ChallengeController extends Controller
                 ->latest()
                 ->limit(20)
                 ->get(),
+            // The answer to "what works here": the measure with the strongest
+            // effective evidence (freshness- and adoption-weighted).
+            'bestMeasure' => Pattern::where('challenge_key', $challenge)
+                ->where('attempts', '>=', 1)
+                ->with('actionMeasure')
+                ->get()
+                ->filter(fn (Pattern $p) => $p->actionMeasure?->is_active)
+                ->sortByDesc(fn (Pattern $p) => $p->effectiveRate() ?? 0)
+                ->first(),
             'lastSeenAt' => $signals->first()?->occurred_at,
         ]);
     }
