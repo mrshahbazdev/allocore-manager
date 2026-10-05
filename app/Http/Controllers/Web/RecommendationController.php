@@ -70,6 +70,31 @@ class RecommendationController extends Controller
         ]);
     }
 
+
+    /**
+     * Accept/dismiss/implement many recommendations at once — one
+     * decision instead of ten clicks.
+     */
+    public function bulkUpdate(Request $request, LearningLoop $loop)
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array'],
+            'ids.*' => ['integer', 'exists:recommendations,id'],
+            'status' => ['required', 'in:accepted,implemented,dismissed'],
+        ]);
+
+        $count = 0;
+        foreach (Recommendation::whereIn('id', $data['ids'])->where('status', 'pending')->get() as $rec) {
+            $rec->update(['status' => $data['status']]);
+            if ($data['status'] === 'dismissed') {
+                $loop->recordDismissal($rec);
+            }
+            $count++;
+        }
+
+        return back()->with('status', "{$count} recommendation(s) {$data['status']}.");
+    }
+
     public function update(Request $request, Recommendation $recommendation, LearningLoop $loop)
     {
         $data = $request->validate([
