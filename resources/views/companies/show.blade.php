@@ -66,6 +66,18 @@
     </table>
 </div>
 
+@if ($relatedChallenges->isNotEmpty())
+<div class="card">
+    <h2>Often seen together <span class="muted">(companies with similar challenges also face)</span></h2>
+    <table>
+        <tr><th>Related challenge</th><th>Companies</th></tr>
+        @foreach ($relatedChallenges as $rc)
+        <tr><td>{{ $rc->challenge_key }}</td><td>{{ $rc->companies }}</td></tr>
+        @endforeach
+    </table>
+</div>
+@endif
+
 <div class="card">
     <h2>Recent signals</h2>
     <table>
