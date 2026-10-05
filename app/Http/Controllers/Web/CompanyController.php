@@ -68,6 +68,11 @@ class CompanyController extends Controller
             'bestNextAction' => $engine->bestNextAction($company),
             'signals' => $company->signals()->latest('occurred_at')->limit(20)->get(),
             'relatedChallenges' => $relatedChallenges,
+            // Challenges this company signalled but no recommendation was
+            // ever generated for — the system's blind spots here.
+            'unansweredChallenges' => $ownChallenges
+                ->diff($company->recommendations()->whereNotNull('challenge_key')->distinct()->pluck('challenge_key'))
+                ->values(),
         ]);
     }
 

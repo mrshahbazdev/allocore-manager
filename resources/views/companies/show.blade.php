@@ -101,6 +101,13 @@
 </div>
 @endif
 
+@if ($unansweredChallenges->isNotEmpty())
+<div class="card" style="border-color:#fecaca">
+    <h2>Unanswered challenges <span class="muted">(signalled, but no recommendation ever generated)</span></h2>
+    <p>@foreach ($unansweredChallenges as $uc)<a href="{{ route('challenges.show', $uc) }}"><code>{{ $uc }}</code></a>@if (! $loop->last), @endif @endforeach</p>
+</div>
+@endif
+
 <div class="card">
     <h2>Recent signals</h2>
     <table>
