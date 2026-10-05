@@ -9,6 +9,23 @@ use Illuminate\Http\Request;
 
 class RecommendationController extends Controller
 {
+    public function index(Request $request)
+    {
+        $status = $request->query('status');
+
+        $query = Recommendation::with('company', 'actionMeasure', 'outcome')
+            ->latest();
+
+        if (in_array($status, ['pending', 'accepted', 'implemented', 'dismissed'])) {
+            $query->where('status', $status);
+        }
+
+        return view('recommendations.index', [
+            'recommendations' => $query->limit(200)->get(),
+            'status' => $status,
+        ]);
+    }
+
     public function update(Request $request, Recommendation $recommendation, LearningLoop $loop)
     {
         $data = $request->validate([
