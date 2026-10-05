@@ -107,6 +107,8 @@ class IntelligenceController extends Controller
             // Learning performance: how fast new evidence is being absorbed.
             'outcomes7d' => Outcome::where('measured_at', '>=', now()->subDays(7))->count(),
             'outcomesPrev7d' => Outcome::whereBetween('measured_at', [now()->subDays(14), now()->subDays(7)])->count(),
+            // Learning latency: median days from recommendation issued to outcome measured.
+            'medianDaysToOutcome' => $this->medianDaysToOutcome(),
         ]);
     }
 
@@ -204,6 +206,26 @@ class IntelligenceController extends Controller
                 ->filter(fn ($s) => ! $s->signals()->where('occurred_at', '>=', now()->subDays(30))->exists())
                 ->count(),
         ]);
+    }
+
+    /**
+     * Median days between a recommendation being issued and its outcome
+     * being measured — how quickly the learning loop closes.
+     */
+    private function medianDaysToOutcome(): ?float
+    {
+        $days = Outcome::join('recommendations', 'outcomes.recommendation_id', '=', 'recommendations.id')
+            ->selectRaw('(julianday(outcomes.measured_at) - julianday(recommendations.created_at)) as days')
+            ->pluck('days')
+            ->map(fn ($d) => (float) $d)
+            ->sort()
+            ->values();
+
+        if ($days->isEmpty()) {
+            return null;
+        }
+
+        return round($days->median(), 1);
     }
 
     /**

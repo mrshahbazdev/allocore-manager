@@ -11,6 +11,7 @@
     <div class="stat"><div class="num">{{ $adoptionRate !== null ? $adoptionRate.'%' : '—' }}</div><div class="lbl">Adoption rate</div></div>
     <div class="stat"><div class="num">{{ $outcomes7d }}</div><div class="lbl">Outcomes this week</div></div>
     <div class="stat"><div class="num">{{ $outcomesPrev7d }}</div><div class="lbl">Outcomes prior week</div></div>
+    <div class="stat"><div class="num">{{ $medianDaysToOutcome !== null ? $medianDaysToOutcome.'d' : '—' }}</div><div class="lbl">Median days to outcome</div></div>
 </div>
 <div class="card">
     <h2>Patterns</h2>
