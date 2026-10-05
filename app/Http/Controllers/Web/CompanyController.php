@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\Signal;
 use App\Services\CompanySimilarity;
 use App\Services\RecommendationEngine;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CompanyController extends Controller
@@ -52,6 +53,33 @@ class CompanyController extends Controller
             'signals' => $company->signals()->latest('occurred_at')->limit(20)->get(),
             'relatedChallenges' => $relatedChallenges,
         ]);
+    }
+
+    public function edit(Company $company)
+    {
+        return view('companies.edit', ['company' => $company]);
+    }
+
+    public function update(Request $request, Company $company)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'industry' => ['nullable', 'string', 'max:255'],
+            'maturity' => ['nullable', 'string', 'max:255'],
+            'situation' => ['nullable', 'string'],
+        ]);
+
+        // Situation is stored as an array of tags; the form edits it as
+        // comma-separated text.
+        $data['situation'] = collect(explode(',', $data['situation'] ?? ''))
+            ->map(fn ($t) => trim($t))
+            ->filter()
+            ->values()
+            ->all();
+
+        $company->update($data);
+
+        return redirect()->route('companies.show', $company)->with('status', 'Company updated.');
     }
 
     public function refresh(Company $company, RecommendationEngine $engine)
