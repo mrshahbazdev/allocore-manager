@@ -6,7 +6,13 @@
     <div class="stat"><div class="num">{{ $recommendations }}</div><div class="lbl">Recommendations</div></div>
     <div class="stat"><div class="num">{{ $outcomes }}</div><div class="lbl">Outcomes</div></div>
     <div class="stat"><div class="num">{{ $successRate !== null ? $successRate.'%' : '—' }}</div><div class="lbl">Success rate</div></div>
+    @foreach (['pending', 'accepted', 'implemented', 'dismissed'] as $st)
+    <div class="stat"><div class="num">{{ $byStatus[$st] ?? 0 }}</div><div class="lbl">{{ ucfirst($st) }}</div></div>
+    @endforeach
 </div>
+<p class="muted" style="margin-bottom:1.25rem">
+    Adoption: {{ $recommendations > 0 ? round((($byStatus['accepted'] ?? 0) + ($byStatus['implemented'] ?? 0)) / $recommendations * 100, 1) : 0 }}% of issued recommendations get accepted or implemented.
+</p>
 <div class="card">
     <h2>Pattern by cohort</h2>
     <table>

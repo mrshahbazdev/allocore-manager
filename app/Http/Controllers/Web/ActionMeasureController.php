@@ -28,6 +28,10 @@ class ActionMeasureController extends Controller
         return view('measures.show', [
             'measure' => $measure,
             'recommendations' => $measure->recommendations()->count(),
+            'byStatus' => $measure->recommendations()
+                ->selectRaw('status, count(*) as total')
+                ->groupBy('status')
+                ->pluck('total', 'status'),
             'outcomes' => $outcomes->count(),
             'successRate' => $outcomes->count() > 0
                 ? round((clone $outcomes)->whereIn('result', ['success', 'partial'])->count() / $outcomes->count() * 100, 1)
