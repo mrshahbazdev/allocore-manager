@@ -5,6 +5,13 @@
 @foreach ($clusters as $cluster)
 <div class="card">
     <h2>{{ $cluster['cohort'] }} <span class="muted">({{ $cluster['companies']->count() }} companies)</span></h2>
+    @if ($cluster['topChallenges']->isNotEmpty())
+    <p class="muted" style="margin-bottom:.5rem">Common challenges:
+        @foreach ($cluster['topChallenges'] as $t)
+            <a href="{{ route('challenges.show', $t->challenge_key) }}">{{ $t->challenge_key }}</a> ({{ $t->total }}){{ $loop->last ? '' : ' · ' }}
+        @endforeach
+    </p>
+    @endif
     <table>
         <tr><th>Company</th><th>Source</th><th>Industry</th><th>Situation</th></tr>
         @foreach ($cluster['companies'] as $c)

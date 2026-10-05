@@ -4,6 +4,10 @@
 <p class="muted" style="margin-bottom:1rem">
     Paste one JSON object per line. Fields: <code>type</code> (required), <code>challenge_key</code>,
     <code>user_id</code>, <code>occurred_at</code>, <code>company</code> = {"external_id": "...", "name": "...", "industry": "...", "maturity": "...", "situation": ["..."]}
+    <br><br>
+    Loop-closing types: <code>action.implemented</code> and <code>outcome.measured</code> carry
+    <code>measure_key</code> (and <code>result</code>: success|partial|failure, <code>failure_reason</code>) —
+    they update the matching recommendation and fold the outcome back into the learning patterns automatically.
 </p>
 <div class="card">
     <form method="POST" action="{{ route('sources.import.store', $source) }}">
