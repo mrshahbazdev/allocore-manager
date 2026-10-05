@@ -25,6 +25,8 @@ class DashboardController extends Controller
                 'recommendations' => Recommendation::count(),
                 'outcomes' => Outcome::count(),
             ],
+            'pendingRecs' => Recommendation::with('company', 'actionMeasure')->where('status', 'pending')->latest()->limit(10)->get(),
+            'unmeasured' => Recommendation::with('company', 'actionMeasure')->where('status', 'implemented')->whereDoesntHave('outcome')->limit(10)->get(),
             'recentSignals' => Signal::with('source', 'company')->latest('occurred_at')->limit(15)->get(),
             'topPatterns' => Pattern::with('actionMeasure')->orderByDesc('attempts')->limit(10)->get(),
             'emergingTrends' => $detector->emerging(30)->take(5),
