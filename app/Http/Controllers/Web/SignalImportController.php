@@ -58,6 +58,7 @@ class SignalImportController extends Controller
         $data = $request->validate(['lines' => ['required', 'string', 'max:2000000']]);
 
         $imported = 0;
+        $skipped = 0;
         $recommendations = 0;
         $errors = [];
 
@@ -74,6 +75,13 @@ class SignalImportController extends Controller
             }
 
             $signal = $ingestor->ingest($source, $row);
+
+            if (! $signal->wasRecentlyCreated) {
+                $skipped++;
+
+                continue;
+            }
+
             $imported++;
 
             if ($signal->company_id && $signal->challenge_key) {
@@ -82,7 +90,8 @@ class SignalImportController extends Controller
         }
 
         return redirect()->route('sources.index')->with('status',
-            "{$imported} signal(s) imported, {$recommendations} recommendation(s) generated."
+            "{$imported} signal(s) imported".($skipped ? ", {$skipped} duplicate(s) skipped" : '')
+            .", {$recommendations} recommendation(s) generated."
             .($errors ? ' '.implode('; ', array_slice($errors, 0, 3)) : ''));
     }
 }
