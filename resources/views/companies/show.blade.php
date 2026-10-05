@@ -51,6 +51,9 @@
             </td>
             <td><span class="badge b-{{ $r->status }}">{{ $r->status }}</span>
                 @if ($r->outcome)<span class="badge b-{{ $r->outcome->result }}">{{ $r->outcome->result }}</span>@endif
+                @if (in_array($r->status, ['accepted', 'implemented']) && ! $r->outcome && $r->updated_at->lt(now()->subDays(30)))
+                    <span class="badge b-partial">outcome overdue</span>
+                @endif
             </td>
             <td style="white-space:nowrap">
                 @if ($r->status === 'pending')
