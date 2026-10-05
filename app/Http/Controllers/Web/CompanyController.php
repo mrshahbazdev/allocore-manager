@@ -15,7 +15,13 @@ class CompanyController extends Controller
     public function index()
     {
         return view('companies.index', [
-            'companies' => Company::with('source')->withCount('signals', 'recommendations')->paginate(25),
+            'companies' => Company::with('source')
+                ->withCount('signals', 'recommendations')
+                ->withCount(['recommendations as pending_recs_count' => fn ($q) => $q->where('status', 'pending')])
+                ->withCount(['recommendations as unmeasured_count' => fn ($q) => $q->where('status', 'implemented')->whereDoesntHave('outcome')])
+                ->orderByDesc('pending_recs_count')
+                ->orderByDesc('unmeasured_count')
+                ->paginate(25),
         ]);
     }
 
