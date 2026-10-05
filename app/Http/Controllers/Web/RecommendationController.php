@@ -9,13 +9,24 @@ use Illuminate\Http\Request;
 
 class RecommendationController extends Controller
 {
-    public function update(Request $request, Recommendation $recommendation)
+    public function update(Request $request, Recommendation $recommendation, LearningLoop $loop)
     {
         $data = $request->validate([
             'status' => ['required', 'in:accepted,implemented,dismissed'],
+            'reason' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $recommendation->update($data);
+        $recommendation->update(['status' => $data['status']]);
+
+        if ($data['status'] === 'dismissed') {
+            if (! empty($data['reason'])) {
+                $recommendation->update(['rationale' => array_merge(
+                    $recommendation->rationale ?? [],
+                    ['dismiss_reason' => $data['reason']]
+                )]);
+            }
+            $loop->recordDismissal($recommendation, $data['reason'] ?? null);
+        }
 
         return back()->with('status', "Recommendation {$data['status']}.");
     }

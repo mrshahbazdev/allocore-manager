@@ -33,6 +33,31 @@ class LearningLoop
         return $outcome;
     }
 
+    /**
+     * A dismissed recommendation is negative evidence for the suggested
+     * measure in this cohort — record it so the engine recommends it less.
+     */
+    public function recordDismissal(Recommendation $recommendation, ?string $reason = null): void
+    {
+        $cohorts = ['global', $this->similarity->cohortFor($recommendation->company)];
+
+        Pattern::where('challenge_key', $recommendation->challenge_key)
+            ->where('action_measure_id', $recommendation->action_measure_id)
+            ->whereIn('cohort', array_unique($cohorts))
+            ->each(function (Pattern $p) use ($reason) {
+                $p->increment('dismissals');
+
+                if ($reason) {
+                    // Dismissal reasons learn alongside outcome failure
+                    // reasons — "ignored because X" is a breakdown too.
+                    $reasons = $p->failure_reasons ?? [];
+                    $key = 'dismissed_'.$reason;
+                    $reasons[$key] = ($reasons[$key] ?? 0) + 1;
+                    $p->update(['failure_reasons' => $reasons]);
+                }
+            });
+    }
+
     private function updatePatterns(Recommendation $recommendation, string $result, ?string $failureReason): void
     {
         $cohorts = ['global', $this->similarity->cohortFor($recommendation->company)];
