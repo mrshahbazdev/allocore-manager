@@ -11,12 +11,28 @@ use Illuminate\Http\Request;
 
 class SignalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $sourceId = $request->query('source_id');
+        $type = $request->query('type');
+        $challenge = $request->query('challenge');
+
+        $signals = Signal::with('source', 'company')
+            ->when($sourceId, fn ($q) => $q->where('source_id', (int) $sourceId))
+            ->when($type, fn ($q) => $q->where('type', $type))
+            ->when($challenge, fn ($q) => $q->where('challenge_key', $challenge))
+            ->latest('occurred_at')
+            ->paginate(50)
+            ->withQueryString();
+
         return view('signals.index', [
-            'signals' => Signal::with('source', 'company')
-                ->latest('occurred_at')
-                ->paginate(50),
+            'signals' => $signals,
+            'sources' => Source::orderBy('name')->get(),
+            'types' => Signal::distinct()->orderBy('type')->pluck('type'),
+            'challenges' => Signal::whereNotNull('challenge_key')->distinct()->orderBy('challenge_key')->pluck('challenge_key'),
+            'sourceId' => $sourceId,
+            'type' => $type,
+            'challenge' => $challenge,
         ]);
     }
 
@@ -24,6 +40,7 @@ class SignalController extends Controller
     {
         return view('signals.show', ['signal' => $signal->load('source', 'company')]);
     }
+
     public function create()
     {
         return view('signals.create', [
