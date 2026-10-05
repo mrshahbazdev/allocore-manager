@@ -11,7 +11,7 @@
 
 <div class="card">
     <h2>Needs attention</h2>
-    @if ($pendingRecs->isEmpty() && $unmeasured->isEmpty())
+    @if ($pendingRecs->isEmpty() && $unmeasured->isEmpty() && $overdue->isEmpty())
         <p class="muted">Nothing waiting — all recommendations decided and all implemented measures measured.</p>
     @endif
     @if ($pendingRecs->isNotEmpty())
@@ -39,6 +39,20 @@
             <td>{{ $r->actionMeasure?->name }}</td>
             <td>{{ $r->challenge_key }}</td>
             <td><a href="{{ route('companies.show', $r->company) }}">Measure</a></td>
+        </tr>
+        @endforeach
+    </table>
+    @endif
+    @if ($overdue->isNotEmpty())
+    <h3 style="margin:.75rem 0 .25rem">Overdue outcomes — stalled >14d ({{ $overdue->count() }})</h3>
+    <table>
+        <tr><th>Company</th><th>Challenge</th><th>Implemented</th><th></th></tr>
+        @foreach ($overdue as $r)
+        <tr>
+            <td><a href="{{ route('companies.show', $r->company) }}">{{ $r->company->name ?? $r->company->external_id }}</a></td>
+            <td>{{ $r->challenge_key }}</td>
+            <td class="muted">{{ $r->updated_at->diffForHumans() }}</td>
+            <td><a href="{{ route('recommendations.outcome.edit', $r) }}">Measure</a></td>
         </tr>
         @endforeach
     </table>
