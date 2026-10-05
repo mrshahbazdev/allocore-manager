@@ -2,38 +2,62 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Allocore Manager</title>
+<title>Allocore Manager — your coach</title>
 <style>
   *{box-sizing:border-box}
-  body{margin:0;font-family:ui-sans-serif,system-ui;background:#f1f5f9;color:#0f172a}
-  header{background:#0f172a;color:#fff;padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
-  header h1{font-size:16px;margin:0}
-  header .who{font-size:13px;color:#94a3b8}
+  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:#f6f7f9;color:#16202e}
+  header{background:#16202e;color:#fff;padding:0 24px;height:58px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+  header .brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700;letter-spacing:.02em}
+  header .brand .dot{width:9px;height:9px;border-radius:50%;background:#ff9200}
+  header .brand small{font-weight:400;color:#94a3b8;font-size:12.5px}
+  header .who{display:flex;align-items:center;gap:10px;font-size:13px;color:#cbd5e1}
   header form{display:inline}
-  header button{background:none;border:1px solid #475569;color:#cbd5e1;border-radius:6px;padding:5px 12px;cursor:pointer;margin-left:10px}
-  main{max-width:820px;margin:28px auto;padding:0 16px}
-  .stats{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
-  .stat{background:#fff;border-radius:10px;padding:14px 18px;flex:1;min-width:140px;border:1px solid #e2e8f0}
-  .stat b{font-size:22px;display:block}.stat span{color:#64748b;font-size:12px}
-  h2{font-size:15px;text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin:26px 0 10px}
-  .rec{background:#fff;border:1px solid #e2e8f0;border-left:4px solid #94a3b8;border-radius:10px;padding:16px 18px;margin-bottom:12px}
-  .rec.critical{border-left-color:#dc2626}.rec.warning{border-left-color:#ca8a04}
-  .rec .t{font-weight:700}.rec .d{margin-top:4px;font-size:14px}
-  .rec .e{margin-top:8px;font-size:12.5px;color:#475569;background:#f8fafc;border-radius:6px;padding:8px 10px}
-  .rec .actions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
-  .rec button{border:1px solid #d6dee9;background:#fff;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer}
-  .rec button.primary{background:#0f172a;color:#fff;border-color:#0f172a}
-  .done{opacity:.65}
-  .note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px}
-  table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;font-size:13.5px}
-  th,td{padding:9px 12px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#f8fafc;color:#64748b;font-size:12px;text-transform:uppercase}
-  .empty{background:#fff;border:1px dashed #cbd5e1;border-radius:10px;padding:26px;text-align:center;color:#64748b}
-  .badge{font-size:11px;padding:2px 8px;border-radius:99px;background:#e2e8f0;color:#334155;vertical-align:middle;margin-left:6px}
+  header button{background:transparent;border:1px solid #3a4a5e;color:#cbd5e1;border-radius:7px;padding:6px 13px;cursor:pointer;font-size:12.5px}
+  header button:hover{background:#233040}
+  main{max-width:780px;margin:0 auto;padding:30px 18px 60px}
+  .hello{margin-bottom:22px}
+  .hello h1{font-size:22px;margin:0 0 4px}
+  .hello p{margin:0;color:#64748b;font-size:14px}
+  .chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+  .chip{background:#fff;border:1px solid #e6eaf0;border-radius:99px;padding:7px 14px;font-size:12.5px;color:#475569}
+  .chip b{color:#16202e;font-weight:700;margin-right:4px}
+  .note{background:#fffbeb;border:1px solid #fde68a;border-radius:9px;padding:10px 14px;font-size:13px;margin-bottom:18px}
+  h2{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:#8a97a8;margin:30px 0 12px;font-weight:700}
+  .card{background:#fff;border:1px solid #e6eaf0;border-radius:14px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .card.sev-critical{border-left:4px solid #dc2626}
+  .card.sev-warning{border-left:4px solid #f59e0b}
+  .card.sev-info{border-left:4px solid #ff9200}
+  .card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .card .t{font-weight:700;font-size:15px;line-height:1.35}
+  .card .d{margin-top:6px;font-size:14px;color:#33404f;line-height:1.5}
+  .pill{flex-shrink:0;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:99px}
+  .pill.critical{background:#fee2e2;color:#b91c1c}
+  .pill.warning{background:#fef3c7;color:#a16207}
+  .pill.info{background:#fff1e0;color:#c2630a}
+  .card .e{margin-top:10px;font-size:12.5px;color:#5b6a7d;background:#f4f6f9;border-radius:8px;padding:9px 12px;display:flex;gap:8px;align-items:center}
+  .card .e::before{content:"◉";color:#ff9200;font-size:10px}
+  .card .meta{margin-top:8px;font-size:12px;color:#8a97a8}
+  .card .actions{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+  .card button{border:1px solid #dbe2ea;background:#fff;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;color:#33404f}
+  .card button:hover{border-color:#b9c4d0}
+  .card button.yes{background:#16202e;color:#fff;border-color:#16202e}
+  .card.done{opacity:.6}
+  .panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .panel .p{background:#fff;border:1px solid #e6eaf0;border-radius:12px;padding:16px}
+  .panel .p b{font-size:24px;display:block}
+  .panel .p span{color:#8a97a8;font-size:12px}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e6eaf0;border-radius:12px;overflow:hidden;font-size:13.5px;margin-bottom:14px}
+  th,td{padding:10px 14px;border-bottom:1px solid #eef1f5;text-align:left}
+  th{background:#f8fafc;color:#8a97a8;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  tr:last-child td{border-bottom:none}
+  .empty{background:#fff;border:1.5px dashed #d3dae3;border-radius:14px;padding:34px;text-align:center;color:#8a97a8;font-size:14px}
+  .empty .big{font-size:26px;margin-bottom:8px}
+  @media (max-width:560px){main{padding:20px 12px}.card{padding:15px}}
 </style>
 </head>
 <body>
 <header>
-  <h1>Allocore Manager <span style="color:#ca8a04">·</span> <span style="font-weight:400;font-size:13px;color:#94a3b8">decision intelligence</span></h1>
+  <div class="brand"><span class="dot"></span>ALLOCORE <small>Manager · decision intelligence</small></div>
   <div class="who">
     {{ $user->name }} · {{ $user->role }}
     <form method="post" action="/logout">@csrf<button type="submit">Logout</button></form>
@@ -42,32 +66,36 @@
 <main>
   @if(session('status'))<div class="note">{{ session('status') }}</div>@endif
 
-  <div class="stats">
-    <div class="stat"><b>{{ $stats['signals'] }}</b><span>signals received</span></div>
-    <div class="stat"><b>{{ $stats['open'] }}</b><span>open actions</span></div>
-    <div class="stat"><b>{{ $stats['done'] }}</b><span>decided</span></div>
-    <div class="stat"><b>{{ $stats['success_rate'] !== null ? $stats['success_rate'].'%' : '—' }}</b><span>recommendation success</span></div>
+  <div class="hello">
+    <h1>Your next actions</h1>
+    <p>Recommendations based on what the system learned across the ecosystem.</p>
+  </div>
+
+  <div class="chips">
+    <div class="chip"><b>{{ $stats['open'] }}</b> open</div>
+    <div class="chip"><b>{{ $stats['done'] }}</b> decided</div>
+    <div class="chip"><b>{{ $stats['signals'] }}</b> signals</div>
+    <div class="chip"><b>{{ $stats['success_rate'] !== null ? $stats['success_rate'].'%' : '—' }}</b> success rate</div>
   </div>
 
   @if($disavoIntel)
-    <h2>DISAVO — portfolio intelligence</h2>
-    <div class="stats">
-      <div class="stat"><b>{{ $disavoIntel['companies'] }}</b><span>companies reporting</span></div>
-      <div class="stat"><b>{{ $disavoIntel['recommendations_total'] }}</b><span>recommendations issued</span></div>
-      <div class="stat"><b>{{ $disavoIntel['resolved'] }}</b><span>outcomes measured</span></div>
-      <div class="stat"><b>{{ $disavoIntel['critical_open'] }}</b><span>critical open</span></div>
+    <h2>Portfolio overview</h2>
+    <div class="panel">
+      <div class="p"><b>{{ $disavoIntel['companies'] }}</b><span>companies reporting</span></div>
+      <div class="p"><b>{{ $disavoIntel['recommendations_total'] }}</b><span>recommendations issued</span></div>
+      <div class="p"><b>{{ $disavoIntel['resolved'] }}</b><span>outcomes measured</span></div>
+      <div class="p"><b>{{ $disavoIntel['critical_open'] }}</b><span>critical open</span></div>
     </div>
   @endif
 
   @if($allocoreIntel)
-    <h2>Allocore — learning performance</h2>
+    <h2>Learning performance</h2>
     <table>
       <tr><th>Pattern</th><th>Recommendations</th><th>Companies tried</th><th>Success rate</th></tr>
       @foreach($allocoreIntel['effectiveness'] as $e)
         <tr><td>{{ $e['code'] }}</td><td>{{ $e['recommendations'] }}</td><td>{{ $e['tried'] }}</td><td>{{ $e['success_rate'] }}%</td></tr>
       @endforeach
     </table>
-    <h2>Company clusters</h2>
     <table>
       <tr><th>Company</th><th>Signals</th></tr>
       @foreach($allocoreIntel['clusters'] as $c)
@@ -84,7 +112,7 @@
         <tr><td>{{ $t->type }}</td><td>{{ $t->n }}</td></tr>
       @endforeach
     </table>
-    <table style="margin-top:12px">
+    <table>
       <tr><th>Challenge</th><th>Companies affected</th></tr>
       @foreach($platformIntel['top_challenges'] as $p)
         <tr><td>{{ $p->challenge }}</td><td>{{ $p->companies_count }}</td></tr>
@@ -92,27 +120,39 @@
     </table>
   @endif
 
-  <h2>Your next actions</h2>
+  <h2>Recommendations for you</h2>
   @forelse($open as $rec)
-    <div class="rec {{ $rec->severity }}">
-      <div class="t">{{ $rec->title }}<span class="badge">{{ $rec->severity }}</span></div>
+    <div class="card sev-{{ $rec->severity }}">
+      <div class="top">
+        <div class="t">{{ $rec->title }}</div>
+        <span class="pill {{ $rec->severity }}">{{ $rec->severity }}</span>
+      </div>
       <div class="d">{{ $rec->description }}</div>
       @if(!empty($rec->evidence['text']))<div class="e">{{ $rec->evidence['text'] }}</div>@endif
+      @if(!empty($rec->evidence['effort']) || !empty($rec->evidence['responsible']))
+        <div class="meta">
+          @if(!empty($rec->evidence['effort']))Effort: {{ ucfirst($rec->evidence['effort']) }}@endif
+          @if(!empty($rec->evidence['responsible'])) · Responsible: {{ $rec->evidence['responsible'] }}@endif
+        </div>
+      @endif
       <div class="actions">
-        <form method="post" action="{{ route('outcome', $rec) }}">@csrf<input type="hidden" name="result" value="success"><button class="primary" type="submit">Done — it worked</button></form>
-        <form method="post" action="{{ route('outcome', $rec) }}">@csrf<input type="hidden" name="result" value="failed"><button type="submit">Done — it didn't work</button></form>
+        <form method="post" action="{{ route('outcome', $rec) }}">@csrf<input type="hidden" name="result" value="success"><button class="yes" type="submit">Done — it worked</button></form>
+        <form method="post" action="{{ route('outcome', $rec) }}">@csrf<input type="hidden" name="result" value="failed"><button type="submit">Didn't work</button></form>
         <form method="post" action="{{ route('outcome', $rec) }}">@csrf<input type="hidden" name="result" value="dismissed"><button type="submit">Not relevant</button></form>
       </div>
     </div>
   @empty
-    <div class="empty">All clear — no open recommendations right now.</div>
+    <div class="empty"><div class="big">✓</div>All clear — no open recommendations right now.</div>
   @endforelse
 
   @if($done->count())
     <h2>Decided</h2>
     @foreach($done as $rec)
-      <div class="rec done">
-        <div class="t">{{ $rec->title }}<span class="badge">{{ $rec->latestOutcome?->result ?? $rec->status }}</span></div>
+      <div class="card done">
+        <div class="top">
+          <div class="t">{{ $rec->title }}</div>
+          <span class="pill info">{{ $rec->latestOutcome?->result ?? $rec->status }}</span>
+        </div>
         <div class="d">{{ $rec->description }}</div>
       </div>
     @endforeach

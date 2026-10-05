@@ -33,7 +33,7 @@ class DecisionEngine
     /** Run the engine: scan recent signals, upsert open recommendations per company. */
     public function run(): int
     {
-        $created = 0;
+        $created = $this->runSuggestions();
 
         foreach (self::RULES as [$prefix, $challenge, $action, $severity, $min]) {
             $signals = Signal::query()
@@ -77,6 +77,66 @@ class DecisionEngine
                 ]);
                 $created++;
             }
+        }
+
+        return $created;
+    }
+
+    /**
+     * Payload-driven suggestions (e.g. audit findings from allocore.de):
+     * signal type 'audit.suggestion' with payload {ref_id, issue, solution,
+     * responsible, effort, status, finding_title} → advice card per company.
+     */
+    private function runSuggestions(): int
+    {
+        $created = 0;
+
+        $pattern = Pattern::firstOrCreate(
+            ['code' => 'audit.suggestion'],
+            ['challenge' => 'Audit-Empfehlung', 'companies_count' => 0]
+        );
+
+        $signals = Signal::query()
+            ->where('type', 'audit.suggestion')
+            ->where('occurred_at', '>=', now()->subDays(90))
+            ->get();
+
+        $pattern->companies_count = $signals->whereNotNull('company_key')->pluck('company_key')->unique()->count();
+        $pattern->evidence = ['suggestions' => $signals->count()];
+        $pattern->save();
+
+        foreach ($signals as $signal) {
+            $payload = $signal->payload ?? [];
+            $ref = (string) ($payload['ref_id'] ?? $signal->id);
+
+            $exists = Recommendation::query()
+                ->where('code', 'audit.suggestion')
+                ->where('evidence->ref_id', $ref)
+                ->exists();
+            if ($exists) {
+                continue;
+            }
+
+            $issue = (string) ($payload['issue'] ?? 'Audit recommendation');
+            $solution = (string) ($payload['solution'] ?? '');
+            $finding = (string) ($payload['finding_title'] ?? '');
+            $effort = (string) ($payload['effort'] ?? '');
+
+            Recommendation::create([
+                'company_key' => $signal->company_key,
+                'pattern_id' => $pattern->id,
+                'code' => 'audit.suggestion',
+                'title' => $issue,
+                'description' => trim(($solution ? $solution.'. ' : '').($finding ? "Audit: {$finding}" : '')),
+                'evidence' => $this->evidence('audit.suggestion', 1) + [
+                    'ref_id' => $ref,
+                    'effort' => $effort,
+                    'responsible' => $payload['responsible'] ?? null,
+                ],
+                'severity' => $effort === 'large' ? 'warning' : 'info',
+                'status' => 'open',
+            ]);
+            $created++;
         }
 
         return $created;

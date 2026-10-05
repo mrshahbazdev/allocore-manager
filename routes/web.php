@@ -1,11 +1,16 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\IngestController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\OutcomeController;
+use App\Http\Controllers\SsoController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/app');
+
+Route::get('/sso/{provider}', [SsoController::class, 'login'])->name('sso');
+Route::post('/ingest/{token}', [IngestController::class, 'store'])->name('ingest');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'form'])->name('login');

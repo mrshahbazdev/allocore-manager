@@ -17,6 +17,11 @@ class DatabaseSeeder extends Seeder
         User::create(['name' => 'Allocore Team', 'email' => 'team@allocore.de', 'password' => 'demo1234', 'role' => 'allocore']);
         User::create(['name' => 'DISAVO', 'email' => 'disavo@allocore.de', 'password' => 'demo1234', 'role' => 'disavo']);
 
+        Source::firstOrCreate(
+            ['name' => 'allocore.de'],
+            ['token' => env('ALLOCORE_INGEST_TOKEN') ?: 'allocore-'.Str::random(24)]
+        );
+
         $source = Source::create(['name' => 'Demo suite', 'token' => 'demo-token-'.Str::random(8)]);
 
         $demo = [

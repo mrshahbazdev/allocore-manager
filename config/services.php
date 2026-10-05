@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'sso' => [
+        'secret' => env('ALLOCORE_SSO_SECRET'),
+    ],
+
 ];
