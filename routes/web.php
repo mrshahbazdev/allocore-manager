@@ -17,6 +17,14 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [LoginController::class, 'login']);
 });
 
+Route::get('/lang/{locale}', function (string $locale) {
+    if (in_array($locale, ['en', 'de'])) {
+        session(['locale' => $locale]);
+    }
+
+    return back();
+})->name('lang');
+
 Route::middleware('auth')->group(function () {
     Route::get('/app', [DashboardController::class, 'index'])->name('app');
     Route::post('/recommendations/{recommendation}/outcome', [OutcomeController::class, 'store'])->name('outcome');

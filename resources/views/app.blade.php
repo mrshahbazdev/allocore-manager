@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Allocore Manager — your coach</title>
+<title>Allocore Manager — {{ __('ui.Your next actions') }}</title>
 <style>
   *{box-sizing:border-box}
   body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:#f6f7f9;color:#16202e}
@@ -57,47 +57,48 @@
 </head>
 <body>
 <header>
-  <div class="brand"><span class="dot"></span>ALLOCORE <small>Manager · decision intelligence</small></div>
+  <div class="brand"><span class="dot"></span>ALLOCORE <small>{{ __('ui.Manager') }} · {{ __('ui.decision intelligence') }}</small></div>
   <div class="who">
+    <a href="{{ route('lang', app()->getLocale() === 'de' ? 'en' : 'de') }}" style="color:#ff9200;font-weight:700;text-decoration:none">{{ app()->getLocale() === 'de' ? 'EN' : 'DE' }}</a>
     {{ $user->name }} · {{ $user->role }}
-    <form method="post" action="/logout">@csrf<button type="submit">Logout</button></form>
+    <form method="post" action="/logout">@csrf<button type="submit">{{ __('ui.Logout') }}</button></form>
   </div>
 </header>
 <main>
   @if(session('status'))<div class="note">{{ session('status') }}</div>@endif
 
   <div class="hello">
-    <h1>Your next actions</h1>
-    <p>Recommendations based on what the system learned across the ecosystem.</p>
+    <h1>{{ __('ui.Your next actions') }}</h1>
+    <p>{{ __('ui.hero_sub') }}</p>
   </div>
 
   <div class="chips">
-    <div class="chip"><b>{{ $stats['open'] }}</b> open</div>
-    <div class="chip"><b>{{ $stats['done'] }}</b> decided</div>
-    <div class="chip"><b>{{ $stats['signals'] }}</b> signals</div>
-    <div class="chip"><b>{{ $stats['success_rate'] !== null ? $stats['success_rate'].'%' : '—' }}</b> success rate</div>
+    <div class="chip"><b>{{ $stats['open'] }}</b> {{ __('ui.open') }}</div>
+    <div class="chip"><b>{{ $stats['done'] }}</b> {{ __('ui.decided') }}</div>
+    <div class="chip"><b>{{ $stats['signals'] }}</b> {{ __('ui.signals') }}</div>
+    <div class="chip"><b>{{ $stats['success_rate'] !== null ? $stats['success_rate'].'%' : '—' }}</b> {{ __('ui.success rate') }}</div>
   </div>
 
   @if($disavoIntel)
-    <h2>Portfolio overview</h2>
+    <h2>{{ __('ui.Portfolio overview') }}</h2>
     <div class="panel">
-      <div class="p"><b>{{ $disavoIntel['companies'] }}</b><span>companies reporting</span></div>
-      <div class="p"><b>{{ $disavoIntel['recommendations_total'] }}</b><span>recommendations issued</span></div>
-      <div class="p"><b>{{ $disavoIntel['resolved'] }}</b><span>outcomes measured</span></div>
-      <div class="p"><b>{{ $disavoIntel['critical_open'] }}</b><span>critical open</span></div>
+      <div class="p"><b>{{ $disavoIntel['companies'] }}</b><span>{{ __('ui.companies reporting') }}</span></div>
+      <div class="p"><b>{{ $disavoIntel['recommendations_total'] }}</b><span>{{ __('ui.recommendations issued') }}</span></div>
+      <div class="p"><b>{{ $disavoIntel['resolved'] }}</b><span>{{ __('ui.outcomes measured') }}</span></div>
+      <div class="p"><b>{{ $disavoIntel['critical_open'] }}</b><span>{{ __('ui.critical open') }}</span></div>
     </div>
   @endif
 
   @if($allocoreIntel)
-    <h2>Learning performance</h2>
+    <h2>{{ __('ui.Learning performance') }}</h2>
     <table>
-      <tr><th>Pattern</th><th>Recommendations</th><th>Companies tried</th><th>Success rate</th></tr>
+      <tr><th>{{ __('ui.Pattern') }}</th><th>{{ __('ui.Recommendations') }}</th><th>{{ __('ui.Companies tried') }}</th><th>{{ __('ui.Success rate') }}</th></tr>
       @foreach($allocoreIntel['effectiveness'] as $e)
         <tr><td>{{ $e['code'] }}</td><td>{{ $e['recommendations'] }}</td><td>{{ $e['tried'] }}</td><td>{{ $e['success_rate'] }}%</td></tr>
       @endforeach
     </table>
     <table>
-      <tr><th>Company</th><th>Signals</th></tr>
+      <tr><th>{{ __('ui.Company') }}</th><th>{{ __('ui.Signals') }}</th></tr>
       @foreach($allocoreIntel['clusters'] as $c)
         <tr><td>{{ $c->company_key }}</td><td>{{ $c->n }}</td></tr>
       @endforeach
@@ -105,22 +106,22 @@
   @endif
 
   @if($platformIntel)
-    <h2>Platform intelligence</h2>
+    <h2>{{ __('ui.Platform intelligence') }}</h2>
     <table>
-      <tr><th>Signal type</th><th>Count</th></tr>
+      <tr><th>{{ __('ui.Signal type') }}</th><th>{{ __('ui.Count') }}</th></tr>
       @foreach($platformIntel['by_type'] as $t)
         <tr><td>{{ $t->type }}</td><td>{{ $t->n }}</td></tr>
       @endforeach
     </table>
     <table>
-      <tr><th>Challenge</th><th>Companies affected</th></tr>
+      <tr><th>{{ __('ui.Challenge') }}</th><th>{{ __('ui.Companies affected') }}</th></tr>
       @foreach($platformIntel['top_challenges'] as $p)
         <tr><td>{{ $p->challenge }}</td><td>{{ $p->companies_count }}</td></tr>
       @endforeach
     </table>
   @endif
 
-  <h2>Recommendations for you</h2>
+  <h2>{{ __('ui.Recommendations for you') }}</h2>
   @forelse($open as $rec)
     <div class="card sev-{{ $rec->severity }}">
       <div class="top">
@@ -131,22 +132,22 @@
       @if(!empty($rec->evidence['text']))<div class="e">{{ $rec->evidence['text'] }}</div>@endif
       @if(!empty($rec->evidence['effort']) || !empty($rec->evidence['responsible']))
         <div class="meta">
-          @if(!empty($rec->evidence['effort']))Effort: {{ ucfirst($rec->evidence['effort']) }}@endif
-          @if(!empty($rec->evidence['responsible'])) · Responsible: {{ $rec->evidence['responsible'] }}@endif
+          @if(!empty($rec->evidence['effort'])){{ __('ui.Effort') }}: {{ __('ui.'.ucfirst($rec->evidence['effort'])) }}@endif
+          @if(!empty($rec->evidence['responsible'])) · {{ __('ui.Responsible') }}: {{ $rec->evidence['responsible'] }}@endif
         </div>
       @endif
       <div class="actions">
-        <form method="post" action="{{ route('outcome', $rec) }}">@csrf<input type="hidden" name="result" value="success"><button class="yes" type="submit">Done — it worked</button></form>
-        <form method="post" action="{{ route('outcome', $rec) }}">@csrf<input type="hidden" name="result" value="failed"><button type="submit">Didn't work</button></form>
-        <form method="post" action="{{ route('outcome', $rec) }}">@csrf<input type="hidden" name="result" value="dismissed"><button type="submit">Not relevant</button></form>
+        <form method="post" action="{{ route('outcome', $rec) }}">@csrf<input type="hidden" name="result" value="success"><button class="yes" type="submit">{{ __('ui.Done — it worked') }}</button></form>
+        <form method="post" action="{{ route('outcome', $rec) }}">@csrf<input type="hidden" name="result" value="failed"><button type="submit">{{ __("ui.Didn't work") }}</button></form>
+        <form method="post" action="{{ route('outcome', $rec) }}">@csrf<input type="hidden" name="result" value="dismissed"><button type="submit">{{ __('ui.Not relevant') }}</button></form>
       </div>
     </div>
   @empty
-    <div class="empty"><div class="big">✓</div>All clear — no open recommendations right now.</div>
+    <div class="empty"><div class="big">✓</div>{{ __('ui.All clear — no open recommendations right now.') }}</div>
   @endforelse
 
   @if($done->count())
-    <h2>Decided</h2>
+    <h2>{{ __('ui.Decided') }}</h2>
     @foreach($done as $rec)
       <div class="card done">
         <div class="top">
