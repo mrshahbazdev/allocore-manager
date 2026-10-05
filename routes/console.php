@@ -10,4 +10,7 @@ Artisan::command('inspire', function () {
 
 // The self-improving loop runs unattended: re-evaluate every company's
 // open challenges each night so recommendations stay fresh.
-Schedule::command('allocore:refresh')->daily();
+// The loop refreshes, then the briefing lands in the log — one chain.
+Schedule::command('allocore:refresh')->daily()->then(function () {
+    Artisan::call('allocore:digest');
+})->appendOutputTo(storage_path('logs/digest.log'));
