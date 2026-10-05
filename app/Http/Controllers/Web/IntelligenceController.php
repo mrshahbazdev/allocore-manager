@@ -104,6 +104,9 @@ class IntelligenceController extends Controller
             'coverageGaps' => $this->coverageGaps(),
             'calibration' => $this->calibration(),
             'challengeAliases' => $this->challengeAliases(),
+            // Learning performance: how fast new evidence is being absorbed.
+            'outcomes7d' => Outcome::where('measured_at', '>=', now()->subDays(7))->count(),
+            'outcomesPrev7d' => Outcome::whereBetween('measured_at', [now()->subDays(14), now()->subDays(7)])->count(),
         ]);
     }
 
