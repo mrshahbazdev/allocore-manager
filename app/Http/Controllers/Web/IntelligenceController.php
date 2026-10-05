@@ -101,6 +101,13 @@ class IntelligenceController extends Controller
                 ? round(Outcome::whereIn('result', ['success', 'partial'])->count() / Outcome::count() * 100, 1)
                 : null,
             'patterns' => Pattern::with('actionMeasure')->orderByDesc('attempts')->limit(50)->get(),
+            // Evidence health: how much of what the system knows is still fresh.
+            'evidenceHealth' => [
+                'fresh' => Pattern::where('last_outcome_at', '>=', now()->subDays(90))->count(),
+                'aging' => Pattern::whereBetween('last_outcome_at', [now()->subDays(180), now()->subDays(90)])->count(),
+                'stale' => Pattern::where('last_outcome_at', '<', now()->subDays(180))->count(),
+                'never' => Pattern::whereNull('last_outcome_at')->count(),
+            ],
             'coverageGaps' => $this->coverageGaps(),
             'calibration' => $this->calibration(),
             'challengeAliases' => $this->challengeAliases(),
