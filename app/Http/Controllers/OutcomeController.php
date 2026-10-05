@@ -21,6 +21,6 @@ class OutcomeController extends Controller
         $recommendation->status = $data['result'] === 'dismissed' ? 'dismissed' : 'done';
         $recommendation->save();
 
-        return back()->with('status', 'Outcome recorded — the system just learned from it.');
+        return back()->with('status', 'ui.outcome_recorded');
     }
 }

@@ -60,12 +60,12 @@
   <div class="brand"><span class="dot"></span>ALLOCORE <small>{{ __('ui.Manager') }} · {{ __('ui.decision intelligence') }}</small></div>
   <div class="who">
     <a href="{{ route('lang', app()->getLocale() === 'de' ? 'en' : 'de') }}" style="color:#ff9200;font-weight:700;text-decoration:none">{{ app()->getLocale() === 'de' ? 'EN' : 'DE' }}</a>
-    {{ $user->name }} · {{ $user->role }}
+    {{ $user->name }} · {{ __('ui.'.$user->role) }}
     <form method="post" action="/logout">@csrf<button type="submit">{{ __('ui.Logout') }}</button></form>
   </div>
 </header>
 <main>
-  @if(session('status'))<div class="note">{{ session('status') }}</div>@endif
+  @if(session('status'))<div class="note">{{ __(session('status')) }}</div>@endif
 
   <div class="hello">
     <h1>{{ __('ui.Your next actions') }}</h1>
@@ -126,10 +126,11 @@
     <div class="card sev-{{ $rec->severity }}">
       <div class="top">
         <div class="t">{{ $rec->title }}</div>
-        <span class="pill {{ $rec->severity }}">{{ $rec->severity }}</span>
+        <span class="pill {{ $rec->severity }}">{{ __('ui.'.$rec->severity) }}</span>
       </div>
       <div class="d">{{ $rec->description }}</div>
-      @if(!empty($rec->evidence['text']))<div class="e">{{ $rec->evidence['text'] }}</div>@endif
+      @php $tried=(int)($rec->evidence['companies_tried']??0); @endphp
+      @if($tried>0)<div class="e">{{ __('ui.evidence', ['tried'=>$tried,'rate'=>$rec->evidence['success_rate']??0]) }}</div>@endif
       @if(!empty($rec->evidence['effort']) || !empty($rec->evidence['responsible']))
         <div class="meta">
           @if(!empty($rec->evidence['effort'])){{ __('ui.Effort') }}: {{ __('ui.'.ucfirst($rec->evidence['effort'])) }}@endif
@@ -152,7 +153,7 @@
       <div class="card done">
         <div class="top">
           <div class="t">{{ $rec->title }}</div>
-          <span class="pill info">{{ $rec->latestOutcome?->result ?? $rec->status }}</span>
+          <span class="pill info">{{ __('ui.'.($rec->latestOutcome?->result ?? $rec->status)) }}</span>
         </div>
         <div class="d">{{ $rec->description }}</div>
       </div>

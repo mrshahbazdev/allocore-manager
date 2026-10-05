@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Allocore Manager — Sign in</title>
+<title>Allocore Manager — {{ __('ui.Sign in') }}</title>
 <style>
   body{margin:0;font-family:ui-sans-serif,system-ui;background:#0f172a;color:#0f172a;display:grid;place-items:center;min-height:100vh}
   .card{background:#fff;border-radius:16px;padding:32px;width:340px;box-shadow:0 20px 50px #0006}
@@ -10,17 +10,19 @@
   input{width:100%;padding:10px 12px;border:1px solid #d6dee9;border-radius:8px;margin-bottom:12px;font-size:14px;box-sizing:border-box}
   button{width:100%;padding:10px;background:#ca8a04;color:#fff;border:0;border-radius:8px;font-weight:600;cursor:pointer}
   .err{color:#dc2626;font-size:13px;margin-bottom:10px}
+  .lang{text-align:right;margin-bottom:8px}.lang a{color:#ca8a04;font-weight:700;text-decoration:none;font-size:12px}
 </style>
 </head>
 <body>
 <form class="card" method="post" action="/login">
+  <div class="lang"><a href="{{ route('lang', app()->getLocale() === 'de' ? 'en' : 'de') }}">{{ app()->getLocale() === 'de' ? 'EN' : 'DE' }}</a></div>
   <h1>Allocore Manager</h1>
-  <div class="sub">Decision intelligence — sign in</div>
+  <div class="sub">{{ __('ui.login_sub') }}</div>
   @csrf
-  @error('email')<div class="err">{{ $message }}</div>@enderror
-  <input type="email" name="email" placeholder="E-mail" value="{{ old('email') }}" required autofocus>
-  <input type="password" name="password" placeholder="Password" required>
-  <button type="submit">Sign in</button>
+  @error('email')<div class="err">{{ __('ui.Wrong credentials.') }}</div>@enderror
+  <input type="email" name="email" placeholder="{{ __('ui.E-mail') }}" value="{{ old('email') }}" required autofocus>
+  <input type="password" name="password" placeholder="{{ __('ui.Password') }}" required>
+  <button type="submit">{{ __('ui.sign_in') }}</button>
 </form>
 </body>
 </html>
