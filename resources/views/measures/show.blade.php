@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-<h1>{{ $measure->name }}</h1>
+<h1>{{ $measure->name }} <a href="{{ route('measures.edit', $measure) }}" class="muted" style="font-size:.8rem">Edit</a></h1>
 <p class="muted" style="margin-bottom:1rem"><code>{{ $measure->key }}</code> · addresses: {{ implode(', ', $measure->addresses_challenges ?? []) ?: '—' }}</p>
 <div class="stat-grid">
     <div class="stat"><div class="num">{{ $recommendations }}</div><div class="lbl">Recommendations</div></div>
