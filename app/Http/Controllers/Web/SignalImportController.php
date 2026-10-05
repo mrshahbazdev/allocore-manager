@@ -19,6 +19,40 @@ class SignalImportController extends Controller
         return view('sources.import', ['source' => $source]);
     }
 
+    /**
+     * Export every signal for a source as JSONL — same format the import
+     * accepts, so exports round-trip and platforms can verify ingestion.
+     */
+    public function export(Source $source)
+    {
+        $lines = $source->signals()
+            ->with('company')
+            ->orderBy('occurred_at')
+            ->get()
+            ->map(function ($signal) {
+                return json_encode(array_filter([
+                    'type' => $signal->type,
+                    'challenge_key' => $signal->challenge_key,
+                    'external_user_id' => $signal->external_user_id,
+                    'occurred_at' => $signal->occurred_at?->toIso8601String(),
+                    'payload' => $signal->payload,
+                    'company' => $signal->company ? array_filter([
+                        'external_id' => $signal->company->external_id,
+                        'name' => $signal->company->name,
+                        'industry' => $signal->company->industry,
+                        'maturity' => $signal->company->maturity,
+                        'situation' => $signal->company->situation,
+                    ]) : null,
+                ], fn ($v) => $v !== null));
+            })
+            ->implode("\n");
+
+        return response($lines."\n", 200, [
+            'Content-Type' => 'application/jsonl',
+            'Content-Disposition' => "attachment; filename=\"{$source->key}-signals.jsonl\"",
+        ]);
+    }
+
     public function store(Request $request, Source $source, SignalIngestor $ingestor, RecommendationEngine $engine)
     {
         $data = $request->validate(['lines' => ['required', 'string', 'max:2000000']]);
