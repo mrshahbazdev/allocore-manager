@@ -37,6 +37,8 @@ Route::patch('/measures/{measure}', [ActionMeasureController::class, 'update'])-
 
 Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
 Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show');
+Route::get('/companies/{company}/edit', [CompanyController::class, 'edit'])->name('companies.edit');
+Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update');
 Route::post('/companies/{company}/refresh', [CompanyController::class, 'refresh'])->name('companies.refresh');
 Route::get('/clusters', [ClusterController::class, 'index'])->name('clusters.index');
 
