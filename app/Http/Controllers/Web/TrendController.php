@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Signal;
 use App\Services\TrendDetector;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TrendController extends Controller
 {
@@ -16,6 +18,17 @@ class TrendController extends Controller
         return view('trends.index', [
             'trends' => $detector->detect($window),
             'window' => $window,
+            // Risks nobody has ever signalled before — the earliest possible
+            // warning the system can give.
+            'emerging' => Signal::whereNotNull('challenge_key')
+                ->where('occurred_at', '>=', now()->subDays(7))
+                ->select('challenge_key', DB::raw('count(*) as recent'), DB::raw('min(occurred_at) as first_seen'))
+                ->groupBy('challenge_key')
+                ->get()
+                ->filter(fn ($row) => ! Signal::where('challenge_key', $row->challenge_key)
+                    ->where('occurred_at', '<', now()->subDays(7))->exists())
+                ->sortByDesc('recent')
+                ->values(),
         ]);
     }
 }

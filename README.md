@@ -33,24 +33,37 @@ Signals in → Patterns → Recommendations → Implementation → Outcomes → 
 
 ## Web app (Blade routes)
 
-- `/` — ecosystem dashboard: stats, sources, learned patterns, recent signals.
+- `/` — ecosystem dashboard: stats, sources, learned patterns, recent signals, plus a "needs attention" queue (pending decisions + missing outcomes).
 - `/signals/new` + `POST /signals` — record a signal; a `challenge_key` immediately triggers recommendations.
-- `/companies` + `/companies/{id}` — company view: recommended next actions with confidence + rationale, similar companies, signals. Accept/dismiss and record outcome from the page.
-- `POST /recommendations/{id}/outcome` — closes the learning loop.
-- `/intelligence/platform/{source}` — what a platform manager sees: common challenges, recommendation effectiveness.
-- `/intelligence/allocore` — what the Allocore team sees: patterns, model quality, success rates.
-- `/intelligence/disavo` — what DISAVO sees: strategic metrics, emerging risks.
-- `/sources` — register/manage data providers (ingest tokens shown for future connectors).
-- `/measures` — action catalog admins maintain.
+- `/companies` + `/companies/{id}` — company view: best-next-action card, recommended actions with confidence + full rationale evidence (cohort, attempts, success rate, evidence age), similar companies, co-occurring challenges. Accept/dismiss and record outcome from the page.
+- `/recommendations/{id}/outcome` — closes the learning loop; failure requires a reason.
+- `/intelligence/platform/{source}` — platform manager view: common challenges, recommendation effectiveness, per-company health.
+- `/intelligence/allocore` — Allocore team view: patterns, coverage gaps, confidence calibration, success rates.
+- `/intelligence/disavo` — DISAVO view: strategic metrics, growth, emerging risks.
+- `/sources` — register/manage data providers, with per-feed health badges (healthy/quiet/stale).
+- `/measures` — action catalog with per-measure adoption funnel (`/measures/{id}` shows effectiveness by cohort).
+- `/challenges/{key}` — everything about one challenge: volume, affected companies, measures by cohort, recent recommendations.
 - `/clusters` — companies grouped by similarity cohort (situation + maturity).
 - `/trends` — `TrendDetector` compares challenge volume recent window vs prior window (7–90d), flags rising trends.
-- `/processes` — automation tracker: every process moves manual → assisted → semi_automated → automated, with a recorded history (`ProcessAssessment`).
+- `/digest` — last-24h briefing: signals, new recs, outcomes, pending decisions.
+- `/processes` — automation tracker: every process moves manual → assisted → semi_automated → automated, with a recorded history (`ProcessAssessment`) and per-challenge maturity suggestions.
+- `/users` — per-user signal/activity intelligence.
 
-- `/sources/{id}/import` — bulk-import signals from a platform export (JSONL, one object per line). Connector path until platform-specific pullers exist.
-- `/measures/{id}` — per-measure effectiveness by cohort.
-- `php artisan allocore:refresh` — re-evaluates open challenges for every company; scheduled daily (`routes/console.php`), so recommendations stay fresh unattended.
+## Loop-closing signals
 
-Seed demo data with `php artisan migrate:fresh --seed` (sources, catalog, companies, historic signals, learned patterns, tracked processes).
+Platforms can close the loop without any UI clicks by emitting lifecycle
+signals — `SignalIngestor::applyLifecycleSignal` handles them:
+
+- `action.implemented` (+ `measure_key`, `recommendation_id`) → recommendation marked implemented.
+- `outcome.measured` (+ `measure_key`/`recommendation_id`, `result` success|partial|failure, `failure_reason`) → outcome recorded, patterns updated.
+
+## Data in / out
+
+- `/sources/{id}/import` — bulk-import signals (JSONL, one object per line). Connector path until platform-specific pullers exist.
+- `/sources/{id}/export` — JSONL export of a source's signals (round-trip compatible with import).
+- `php artisan allocore:refresh` — re-evaluates open challenges for every company, expires stale pending recommendations; scheduled daily (`routes/console.php`).
+
+Seed demo data with `php artisan migrate:fresh --seed` (sources, catalog, companies, historic signals, learned patterns, tracked processes, generated recommendations and outcomes).
 
 ## Feature validation rule
 
