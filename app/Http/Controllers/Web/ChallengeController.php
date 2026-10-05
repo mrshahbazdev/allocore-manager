@@ -74,6 +74,12 @@ class ChallengeController extends Controller
                 ->sortByDesc(fn (Pattern $p) => $p->effectiveRate() ?? 0)
                 ->first(),
             'lastSeenAt' => $signals->first()?->occurred_at,
+            // Open decisions still waiting on a human for this challenge.
+            'pendingRecs' => Recommendation::where('challenge_key', $challenge)
+                ->where('status', Recommendation::STATUS_PENDING)
+                ->with(['company', 'actionMeasure'])
+                ->orderByDesc('confidence')
+                ->get(),
         ]);
     }
 }

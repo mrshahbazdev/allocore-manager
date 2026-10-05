@@ -7,6 +7,7 @@
     <div class="stat"><div class="num">{{ $companyCount }}</div><div class="lbl">Companies affected</div></div>
     <div class="stat"><div class="num">{{ $patterns->count() }}</div><div class="lbl">Measures measured</div></div>
     <div class="stat"><div class="num">{{ $lastSeenAt?->diffForHumans() ?? '—' }}</div><div class="lbl">Last seen</div></div>
+    <div class="stat"><div class="num">{{ $pendingRecs->count() }}</div><div class="lbl">Pending decisions</div></div>
     <div class="stat"><div class="num">{{ $bestMeasure ? $bestMeasure->actionMeasure?->name : '—' }}</div><div class="lbl">Best proven measure {{ $bestMeasure?->effectiveRate() !== null ? '('.$bestMeasure->effectiveRate().'%)' : '' }}</div></div>
 </div>
 
@@ -52,7 +53,24 @@
 </div>
 
 <div class="card">
-    <h2>Recent recommendations</h2>
+    @if ($pendingRecs->isNotEmpty())
+<div class="card">
+    <h2>Waiting on decisions ({{ $pendingRecs->count() }})</h2>
+    <table>
+        <tr><th>Company</th><th>Recommended</th><th>Conf</th><th>Created</th><th></th></tr>
+        @foreach ($pendingRecs as $r)
+        <tr>
+            <td><a href="{{ route('companies.show', $r->company) }}">{{ $r->company?->name }}</a></td>
+            <td>{{ $r->actionMeasure?->name }}</td>
+            <td class="conf">{{ $r->confidence }}%</td>
+            <td class="muted">{{ $r->created_at->diffForHumans() }}</td>
+            <td><a href="{{ route('recommendations.show', $r) }}">view</a></td>
+        </tr>
+        @endforeach
+    </table>
+</div>
+@endif
+<h2>Recent recommendations</h2>
     <table>
         <tr><th>Company</th><th>Recommended</th><th>Conf</th><th>Status</th><th>Created</th></tr>
         @foreach ($recommendations as $r)
