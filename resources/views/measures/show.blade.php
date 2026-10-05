@@ -10,7 +10,7 @@
 <div class="card">
     <h2>Pattern by cohort</h2>
     <table>
-        <tr><th>Challenge</th><th>Cohort</th><th>Attempts</th><th>Success</th><th>Failures</th><th>Top failure reasons</th></tr>
+        <tr><th>Challenge</th><th>Cohort</th><th>Attempts</th><th>Success</th><th>Failures</th><th>Dismissed</th><th>Top failure reasons</th></tr>
         @foreach ($patterns as $p)
         <tr>
             <td>{{ $p->challenge_key }}</td>
@@ -18,10 +18,11 @@
             <td>{{ $p->attempts }}</td>
             <td class="conf">{{ $p->successRate() !== null ? $p->successRate().'%' : '—' }}</td>
             <td>{{ $p->failures }}</td>
+            <td>{{ $p->dismissals }}</td>
             <td class="muted">{{ collect($p->failure_reasons ?? [])->sortDesc()->take(3)->map(fn ($c, $r) => "$r ($c)")->implode(', ') }}</td>
         </tr>
         @endforeach
-        @if ($patterns->isEmpty())<tr><td colspan="6" class="muted">No measured outcomes for this measure yet.</td></tr>@endif
+        @if ($patterns->isEmpty())<tr><td colspan="7" class="muted">No measured outcomes for this measure yet.</td></tr>@endif
     </table>
 </div>
 @endsection
