@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Outcome;
 use App\Models\Recommendation;
 use App\Services\LearningLoop;
 use Illuminate\Http\Request;
@@ -23,6 +24,17 @@ class RecommendationController extends Controller
         return view('recommendations.index', [
             'recommendations' => $query->limit(200)->get(),
             'status' => $status,
+        ]);
+    }
+
+    public function outcomes()
+    {
+        return view('recommendations.outcomes', [
+            'outcomes' => Outcome::with('recommendation.company', 'recommendation.actionMeasure')
+                ->latest('measured_at')
+                ->paginate(50),
+            'byResult' => Outcome::selectRaw('result, count(*) as total')
+                ->groupBy('result')->pluck('total', 'result'),
         ]);
     }
 
