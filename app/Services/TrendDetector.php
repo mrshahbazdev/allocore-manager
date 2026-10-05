@@ -47,6 +47,22 @@ class TrendDetector
             ->values();
     }
 
+    /**
+     * Challenges that were active but have gone quiet — resolved, or simply
+     * unobserved. Zero signals in `quietDays` while present in the window
+     * before it.
+     */
+    public function goneQuiet(int $quietDays = 14, int $activeWindowDays = 60): Collection
+    {
+        $recent = $this->counts(now()->subDays($quietDays), now());
+        $before = $this->counts(now()->subDays($activeWindowDays), now()->subDays($quietDays));
+
+        return $before->reject(fn ($count, $key) => $recent->has($key))
+            ->sortDesc()
+            ->map(fn ($count, $key) => ['challenge_key' => $key, 'previous' => $count])
+            ->values();
+    }
+
     private function counts($from, $to): Collection
     {
         return Signal::whereNotNull('challenge_key')

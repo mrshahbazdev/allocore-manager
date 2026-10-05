@@ -17,6 +17,7 @@ class TrendController extends Controller
 
         return view('trends.index', [
             'trends' => $detector->detect($window),
+            'goneQuiet' => $detector->goneQuiet(),
             'window' => $window,
             // Risks nobody has ever signalled before — the earliest possible
             // warning the system can give.
