@@ -22,8 +22,8 @@ class OutcomeOverdueTest extends TestCase
             'company_id' => $company->id, 'action_measure_id' => $measure->id,
             'challenge_key' => 'ch', 'status' => 'implemented', 'confidence' => 70,
         ]);
-        $rec->timestamps = false;
-        $rec->update(['updated_at' => now()->subDays(45)]);
+        \Illuminate\Support\Facades\DB::table('recommendations')
+            ->where('id', $rec->id)->update(['updated_at' => now()->subDays(45)]);
 
         $this->get(route('companies.show', $company))
             ->assertOk()->assertSee('outcome overdue');
