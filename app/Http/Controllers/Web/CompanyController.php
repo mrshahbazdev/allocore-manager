@@ -105,4 +105,40 @@ class CompanyController extends Controller
         return redirect()->route('companies.show', $company)
             ->with('status', "{$count} new recommendation(s) generated.");
     }
+
+    public function timeline(Company $company)
+    {
+        $events = collect();
+
+        foreach ($company->signals()->with('source')->latest('occurred_at')->limit(100)->get() as $s) {
+            $events->push([
+                'at' => $s->occurred_at,
+                'kind' => 'signal',
+                'label' => $s->type,
+                'detail' => collect([$s->challenge_key, $s->source?->name])->filter()->implode(' · '),
+            ]);
+        }
+
+        foreach ($company->recommendations()->with('actionMeasure', 'outcome')->latest()->limit(100)->get() as $r) {
+            $events->push([
+                'at' => $r->created_at,
+                'kind' => 'recommendation',
+                'label' => $r->actionMeasure?->name ?? 'recommendation',
+                'detail' => "{$r->status} · confidence {$r->confidence}%",
+            ]);
+            if ($r->outcome) {
+                $events->push([
+                    'at' => $r->outcome->measured_at,
+                    'kind' => 'outcome',
+                    'label' => $r->actionMeasure?->name ?? 'outcome',
+                    'detail' => $r->outcome->result.($r->outcome->failure_reason ? " · {$r->outcome->failure_reason}" : ''),
+                ]);
+            }
+        }
+
+        return view('companies.timeline', [
+            'company' => $company,
+            'events' => $events->sortByDesc('at')->values(),
+        ]);
+    }
 }

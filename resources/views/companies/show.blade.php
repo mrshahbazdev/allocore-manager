@@ -5,6 +5,7 @@
     {{ $company->source?->name }} · {{ $company->industry ?? 'no industry' }} · {{ $company->maturity ?? 'maturity unknown' }}
     @if ($company->situation) · {{ implode(', ', $company->situation) }}@endif
     · <a href="{{ route('companies.edit', $company) }}">Edit</a>
+    · <a href="{{ route('companies.timeline', $company) }}">Timeline</a>
 </p>
 
 @if ($bestNextAction)
