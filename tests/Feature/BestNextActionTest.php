@@ -6,6 +6,7 @@ use App\Models\ActionMeasure;
 use App\Models\Company;
 use App\Models\Pattern;
 use App\Models\Recommendation;
+use App\Models\Signal;
 use App\Models\Source;
 use App\Services\RecommendationEngine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -60,5 +61,21 @@ class BestNextActionTest extends TestCase
         // challenge has not been signaled in the last 90 days
         $this->assertEquals(1, $this->engine->expireStale($this->company));
         $this->assertEquals('dismissed', Recommendation::first()->status);
+    }
+
+    public function test_company_page_shows_cooccurring_challenges(): void
+    {
+        $peer = Company::create(['source_id' => $this->company->source_id, 'external_id' => 'peer']);
+        foreach ([[$this->company, 'shared_ch'], [$peer, 'shared_ch'], [$peer, 'peer_only_ch']] as [$co, $ch]) {
+            Signal::create([
+                'source_id' => $co->source_id, 'company_id' => $co->id,
+                'type' => 'risk.detected', 'challenge_key' => $ch, 'occurred_at' => now(),
+            ]);
+        }
+
+        $this->get(route('companies.show', $this->company))
+            ->assertOk()
+            ->assertSee('Often seen together')
+            ->assertSee('peer_only_ch');
     }
 }
