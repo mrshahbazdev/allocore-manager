@@ -4,15 +4,17 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Process;
+use App\Services\AutomationAdvisor;
 use Illuminate\Http\Request;
 
 class ProcessController extends Controller
 {
-    public function index()
+    public function index(AutomationAdvisor $advisor)
     {
         return view('processes.index', [
             'processes' => Process::with('assessments')->latest()->get(),
             'stages' => Process::STAGES,
+            'paths' => $advisor->assess(),
         ]);
     }
 
