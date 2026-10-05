@@ -57,6 +57,7 @@
                 @endif
             </td>
             <td style="white-space:nowrap">
+                <a href="{{ route('recommendations.show', $r) }}">view</a>
                 @if ($r->status === 'pending')
                 <form class="inline" method="POST" action="{{ route('recommendations.update', $r) }}">@csrf @method('PATCH')
                     <input type="hidden" name="status" value="accepted"><button>Accept</button></form>

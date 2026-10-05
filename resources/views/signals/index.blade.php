@@ -35,7 +35,7 @@
             <td>@if ($s->challenge_key)<a href="{{ route('challenges.show', $s->challenge_key) }}"><code>{{ $s->challenge_key }}</code></a>@else —@endif</td>
             <td>@if ($s->company)<a href="{{ route('companies.show', $s->company) }}">{{ $s->company->name }}</a>@else —@endif</td>
             <td class="muted">{{ $s->external_user_id ?? '—' }}</td>
-            <td class="muted">{{ $s->payload ? json_encode($s->payload) : '—' }}</td>
+            <td class="muted"><a href="{{ route('signals.show', $s) }}">{{ $s->payload ? json_encode($s->payload) : '—' }}</a></td>
         </tr>
         @endforeach
         @if ($signals->isEmpty())<tr><td colspan="7" class="muted">No signals yet — <a href="{{ route('signals.create') }}">record one</a>.</td></tr>@endif

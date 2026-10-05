@@ -22,7 +22,7 @@
         @endif
     </form>
     <table>
-        <tr><th>Company</th><th>Challenge</th><th>Recommended</th><th>Conf</th><th>Status</th><th>Outcome</th><th>Created</th></tr>
+        <tr><th>Company</th><th>Challenge</th><th>Recommended</th><th>Conf</th><th>Status</th><th>Outcome</th><th>Created</th><th></th></tr>
         @foreach ($recommendations as $r)
         <tr>
             <td><a href="{{ route('companies.show', $r->company) }}">{{ $r->company?->name }}</a></td>
@@ -40,9 +40,10 @@
                 @endif
             </td>
             <td class="muted">{{ $r->created_at->diffForHumans() }}</td>
+            <td><a href="{{ route('recommendations.show', $r) }}">view</a></td>
         </tr>
         @endforeach
-        @if ($recommendations->isEmpty())<tr><td colspan="7" class="muted">None{{ $status ? " with status {$status}" : '' }}.</td></tr>@endif
+        @if ($recommendations->isEmpty())<tr><td colspan="8" class="muted">None{{ $status ? " with status {$status}" : '' }}.</td></tr>@endif
     </table>
 </div>
 @endsection
