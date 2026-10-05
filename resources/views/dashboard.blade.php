@@ -22,7 +22,7 @@
 
 <div class="card">
     <h2>Needs attention</h2>
-    @if ($pendingRecs->isEmpty() && $unmeasured->isEmpty() && $staleSources->isEmpty())
+    @if ($pendingRecs->isEmpty() && $unmeasured->isEmpty() && $stalledAccepted->isEmpty() && $staleSources->isEmpty())
         <p class="muted">Nothing waiting — all recommendations decided and all implemented measures measured.</p>
     @endif
     @if ($staleSources->isNotEmpty())
@@ -40,6 +40,22 @@
             <td>{{ $r->challenge_key }}</td>
             <td class="conf">{{ $r->confidence !== null ? number_format($r->confidence, 0).'%' : '—' }}</td>
             <td><a href="{{ route('companies.show', $r->company) }}">Decide</a></td>
+        </tr>
+        @endforeach
+    </table>
+    @endif
+    @if ($stalledAccepted->isNotEmpty())
+    <h3 style="margin:.75rem 0 .25rem">Stalled after accept ({{ $stalledAccepted->count() }})</h3>
+    <p class="muted">Accepted 7+ days ago but never marked implemented — the loop stops here.</p>
+    <table>
+        <tr><th>Company</th><th>Accepted measure</th><th>Challenge</th><th>Accepted</th><th></th></tr>
+        @foreach ($stalledAccepted as $r)
+        <tr>
+            <td><a href="{{ route('companies.show', $r->company) }}">{{ $r->company->name ?? $r->company->external_id }}</a></td>
+            <td>{{ $r->actionMeasure?->name }}</td>
+            <td>{{ $r->challenge_key }}</td>
+            <td class="muted">{{ $r->updated_at->diffForHumans() }}</td>
+            <td><a href="{{ route('companies.show', $r->company) }}">Update</a></td>
         </tr>
         @endforeach
     </table>
