@@ -28,4 +28,19 @@
         @if ($patterns->isEmpty())<tr><td colspan="7" class="muted">No patterns yet.</td></tr>@endif
     </table>
 </div>
+<div class="card">
+    <h2>Coverage gaps <span class="muted">(signalled challenges with no measure)</span></h2>
+    <table>
+        <tr><th>Challenge</th><th>Signals</th><th>Companies</th><th></th></tr>
+        @foreach ($coverageGaps as $g)
+        <tr>
+            <td>{{ $g->challenge_key }}</td>
+            <td>{{ $g->signals }}</td>
+            <td>{{ $g->companies }}</td>
+            <td><a href="{{ route('measures.create') }}">Add a measure</a></td>
+        </tr>
+        @endforeach
+        @if ($coverageGaps->isEmpty())<tr><td colspan="4" class="muted">Every signalled challenge has at least one measure in the catalog.</td></tr>@endif
+    </table>
+</div>
 @endsection
