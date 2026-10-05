@@ -52,7 +52,7 @@
         <tr><th>Challenge</th><th>Signals</th><th>vs prior 30d</th></tr>
         @foreach ($emergingTrends as $t)
         <tr>
-            <td>{{ $t['challenge_key'] }}</td>
+            <td><a href="{{ route('challenges.show', $t['challenge_key']) }}">{{ $t['challenge_key'] }}</a></td>
             <td>{{ $t['recent'] }}</td>
             <td class="conf">{{ $t['growth_pct'] === null ? 'new' : '+'.$t['growth_pct'].'%' }}</td>
         </tr>
@@ -84,7 +84,7 @@
         <tr><th>Challenge</th><th>Action</th><th>Cohort</th><th>Attempts</th><th>Success rate</th></tr>
         @foreach ($topPatterns as $p)
         <tr>
-            <td>{{ $p->challenge_key }}</td>
+            <td><a href="{{ route('challenges.show', $p->challenge_key) }}">{{ $p->challenge_key }}</a></td>
             <td>{{ $p->actionMeasure?->name }}</td>
             <td>{{ $p->cohort }}</td>
             <td>{{ $p->attempts }}</td>

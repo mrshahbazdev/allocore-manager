@@ -31,7 +31,7 @@
     <table>
         <tr><th>Challenge</th><th>Signals</th></tr>
         @foreach ($emergingRisks as $row)
-        <tr><td>{{ $row->challenge_key }}</td><td>{{ $row->total }}</td></tr>
+        <tr><td><a href="{{ route('challenges.show', $row->challenge_key) }}">{{ $row->challenge_key }}</a></td><td>{{ $row->total }}</td></tr>
         @endforeach
         @if ($emergingRisks->isEmpty())<tr><td colspan="2" class="muted">No risks detected in the last 30 days.</td></tr>@endif
     </table>

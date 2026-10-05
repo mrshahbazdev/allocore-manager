@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Web\ActionMeasureController;
+use App\Http\Controllers\Web\ChallengeController;
 use App\Http\Controllers\Web\ClusterController;
 use App\Http\Controllers\Web\CompanyController;
 use App\Http\Controllers\Web\DashboardController;
@@ -52,6 +53,7 @@ Route::get('/users/{externalUserId}', [UserIntelligenceController::class, 'show'
 
 Route::get('/digest', [DigestController::class, 'index'])->name('digest');
 
+Route::get('/challenges/{challenge}', [ChallengeController::class, 'show'])->name('challenges.show');
 Route::get('/intelligence/platform/{source}', [IntelligenceController::class, 'platform'])->name('intelligence.platform');
 Route::get('/intelligence/allocore', [IntelligenceController::class, 'allocore'])->name('intelligence.allocore');
 Route::get('/intelligence/disavo', [IntelligenceController::class, 'disavo'])->name('intelligence.disavo');
