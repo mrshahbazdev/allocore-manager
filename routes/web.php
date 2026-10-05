@@ -27,6 +27,7 @@ Route::post('/sources', [SourceController::class, 'store'])->name('sources.store
 Route::get('/sources/{source}/edit', [SourceController::class, 'edit'])->name('sources.edit');
 Route::get('/sources/{source}/import', [SignalImportController::class, 'create'])->name('sources.import');
 Route::post('/sources/{source}/import', [SignalImportController::class, 'store'])->name('sources.import.store');
+Route::get('/sources/{source}/export', [SignalImportController::class, 'export'])->name('sources.export');
 Route::patch('/sources/{source}', [SourceController::class, 'update'])->name('sources.update');
 
 Route::get('/measures', [ActionMeasureController::class, 'index'])->name('measures.index');
