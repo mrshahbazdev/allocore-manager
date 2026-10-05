@@ -57,6 +57,7 @@ class RecommendationEngine
                         'attempts' => $pattern->attempts,
                         'success_rate' => $pattern->successRate(),
                         'evidence_age_days' => $pattern->last_outcome_at?->diffInDays(now()),
+                        'dismissals' => $pattern->dismissals,
                         'message' => sprintf(
                             '%d comparable companies implemented this measure; %s%% achieved the desired improvement.',
                             $pattern->attempts,
