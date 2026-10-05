@@ -35,6 +35,17 @@
         @if ($patterns->isEmpty())<tr><td colspan="8" class="muted">No patterns yet.</td></tr>@endif
     </table>
 </div>
+@if ($dismissReasons->isNotEmpty())
+<div class="card">
+    <h2>Why advice gets ignored <span class="muted">(dismissal reasons)</span></h2>
+    <table>
+        <tr><th>Reason</th><th>Times</th></tr>
+        @foreach ($dismissReasons as $reason => $count)
+        <tr><td><code>{{ str_replace('dismissed_', '', $reason) }}</code></td><td>{{ $count }}</td></tr>
+        @endforeach
+    </table>
+</div>
+@endif
 <div class="card">
     <h2>Coverage gaps <span class="muted">(signalled challenges with no measure)</span></h2>
     <table>
