@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Source;
+use App\Services\TrendDetector;
 use Illuminate\Http\Request;
 
 class SourceController extends Controller
@@ -37,7 +38,7 @@ class SourceController extends Controller
         return redirect()->route('sources.index')->with('status', 'Source registered.');
     }
 
-    public function show(Source $source)
+    public function show(Source $source, TrendDetector $detector)
     {
         $signals = $source->signals()->with('company')->latest('occurred_at')->get();
 
@@ -59,6 +60,7 @@ class SourceController extends Controller
             'byChallenge' => $byChallenge,
             'companies' => $source->companies()->orderBy('name')->get(),
             'lastSeenAt' => $signals->first()?->occurred_at,
+            'trends' => $detector->detect(30, $source->id),
         ]);
     }
 
