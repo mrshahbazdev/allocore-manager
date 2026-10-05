@@ -24,6 +24,8 @@
         <div class="stat"><div class="num">{{ $recommendationsIssued }}</div><div class="lbl">Recommendations issued</div></div>
         <div class="stat"><div class="num">{{ $outcomesMeasured }}</div><div class="lbl">Outcomes measured</div></div>
         <div class="stat"><div class="num">{{ $successRate !== null ? $successRate.'%' : '—' }}</div><div class="lbl">Success rate</div></div>
+        <div class="stat"><div class="num">{{ $coverageRatio !== null ? $coverageRatio.'%' : '—' }}</div><div class="lbl">Challenge coverage</div></div>
+        <div class="stat"><div class="num">{{ $staleSources }}</div><div class="lbl">Feeds quiet 30d</div></div>
     </div>
 </div>
 <div class="card">

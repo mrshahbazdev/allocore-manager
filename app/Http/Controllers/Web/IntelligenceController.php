@@ -178,6 +178,29 @@ class IntelligenceController extends Controller
                 ->orderByDesc('total')
                 ->limit(10)
                 ->get(),
+            // Strategic health: how much of what companies report can the
+            // system actually act on, and is data still flowing?
+            'coverageRatio' => $this->coverageRatio(),
+            'staleSources' => Source::where('is_active', true)->get()
+                ->filter(fn ($s) => ! $s->signals()->where('occurred_at', '>=', now()->subDays(30))->exists())
+                ->count(),
         ]);
+    }
+
+    /**
+     * Share of signalled challenges that at least one active measure
+     * addresses — the system's ability to answer what it sees.
+     */
+    private function coverageRatio(): ?float
+    {
+        $covered = ActionMeasure::where('is_active', true)->get()
+            ->flatMap->addresses_challenges->unique();
+        $signalled = Signal::whereNotNull('challenge_key')->distinct()->pluck('challenge_key');
+
+        if ($signalled->isEmpty()) {
+            return null;
+        }
+
+        return round($signalled->intersect($covered)->count() / $signalled->count() * 100, 1);
     }
 }
