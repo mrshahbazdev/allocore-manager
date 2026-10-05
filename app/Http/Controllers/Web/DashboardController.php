@@ -32,6 +32,12 @@ class DashboardController extends Controller
                 ->whereDoesntHave('outcome')
                 ->where('updated_at', '<', now()->subDays(14))
                 ->oldest('updated_at')->limit(10)->get(),
+            // Accepted but never marked implemented — stalled in the
+            // gap between "yes" and "done".
+            'stalledAccepted' => Recommendation::with('company', 'actionMeasure')
+                ->where('status', 'accepted')
+                ->where('updated_at', '<', now()->subDays(7))
+                ->oldest('updated_at')->limit(10)->get(),
             // Feeds that have gone quiet — a dead source starves the loop.
             'staleSources' => Source::where('is_active', true)->whereDoesntHave('signals', fn ($q) => $q->where('occurred_at', '>=', now()->subDays(30)))->get(),
             'recentSignals' => Signal::with('source', 'company')->latest('occurred_at')->limit(15)->get(),
