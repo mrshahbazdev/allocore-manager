@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Signal;
+use App\Models\Source;
 use App\Services\CompanySimilarity;
 use App\Services\RecommendationEngine;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ class CompanyController extends Controller
     public function index(Request $request)
     {
         $q = trim((string) $request->query('q', ''));
+        $sourceId = $request->query('source_id', '');
 
         return view('companies.index', [
             'companies' => Company::with('source')
@@ -27,11 +29,14 @@ class CompanyController extends Controller
                         ->orWhere('external_id', 'like', "%{$q}%")
                         ->orWhere('industry', 'like', "%{$q}%");
                 }))
+                ->when($sourceId !== '', fn ($query) => $query->where('source_id', $sourceId))
                 ->orderByDesc('pending_recs_count')
                 ->orderByDesc('unmeasured_count')
                 ->paginate(25)
                 ->withQueryString(),
             'q' => $q,
+            'sourceId' => $sourceId,
+            'sources' => Source::orderBy('name')->get(),
         ]);
     }
 
