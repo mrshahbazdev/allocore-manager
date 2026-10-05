@@ -38,12 +38,26 @@ class RecommendationController extends Controller
         ]);
     }
 
-    public function outcomes()
+    public function outcomes(Request $request)
     {
+        $result = $request->query('result', '');
+        $challenge = $request->query('challenge', '');
+
+        $outcomes = Outcome::with('recommendation.company', 'recommendation.actionMeasure')
+            ->when($result !== '', fn ($q) => $q->where('result', $result))
+            ->when($challenge !== '', fn ($q) => $q->whereHas('recommendation', fn ($r) => $r->where('challenge_key', $challenge)))
+            ->latest('measured_at')
+            ->paginate(50)
+            ->withQueryString();
+
         return view('recommendations.outcomes', [
-            'outcomes' => Outcome::with('recommendation.company', 'recommendation.actionMeasure')
-                ->latest('measured_at')
-                ->paginate(50),
+            'outcomes' => $outcomes,
+            'result' => $result,
+            'challenge' => $challenge,
+            'challenges' => Outcome::join('recommendations', 'outcomes.recommendation_id', '=', 'recommendations.id')
+                ->whereNotNull('recommendations.challenge_key')
+                ->distinct()->orderBy('recommendations.challenge_key')
+                ->pluck('recommendations.challenge_key'),
             'byResult' => Outcome::selectRaw('result, count(*) as total')
                 ->groupBy('result')->pluck('total', 'result'),
         ]);
@@ -55,6 +69,7 @@ class RecommendationController extends Controller
             'recommendation' => $recommendation->load('company', 'actionMeasure', 'signal', 'outcome'),
         ]);
     }
+
     public function update(Request $request, Recommendation $recommendation, LearningLoop $loop)
     {
         $data = $request->validate([
