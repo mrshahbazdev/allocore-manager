@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\Pattern;
 use App\Models\Signal;
 use App\Services\CompanySimilarity;
 
@@ -23,6 +24,15 @@ class ClusterController extends Controller
                     ->orderByDesc('total')
                     ->limit(5)
                     ->get(),
+                // What actually works in this cohort — the cluster's
+                // strongest measured evidence.
+                'bestMeasures' => Pattern::where('cohort', $cohort)
+                    ->with('actionMeasure')
+                    ->get()
+                    ->filter(fn ($p) => $p->evidenceAdjustedRate() !== null)
+                    ->sortByDesc(fn ($p) => $p->evidenceAdjustedRate())
+                    ->take(3)
+                    ->values(),
             ])
             ->sortByDesc(fn ($c) => $c['companies']->count())
             ->values();

@@ -12,6 +12,14 @@
         @endforeach
     </p>
     @endif
+    @if ($cluster['bestMeasures']->isNotEmpty())
+    <p class="muted" style="margin-bottom:.5rem">What works here:
+        @foreach ($cluster['bestMeasures'] as $p)
+            <a href="{{ route('measures.show', $p->actionMeasure) }}">{{ $p->actionMeasure?->name }}</a>
+            ({{ $p->evidenceAdjustedRate() }}%, {{ $p->attempts }}×){{ $loop->last ? '' : ' · ' }}
+        @endforeach
+    </p>
+    @endif
     <table>
         <tr><th>Company</th><th>Source</th><th>Industry</th><th>Situation</th></tr>
         @foreach ($cluster['companies'] as $c)
