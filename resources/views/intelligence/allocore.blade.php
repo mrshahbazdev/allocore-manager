@@ -44,6 +44,21 @@
     </table>
 </div>
 <div class="card">
+    <h2>Possible duplicate challenges <span class="muted">(same words, different key)</span></h2>
+    <table>
+        <tr><th>Keys</th></tr>
+        @foreach ($challengeAliases as $group)
+        <tr><td>
+            @foreach ($group as $key)
+                <a href="{{ route('challenges.show', $key) }}"><code>{{ $key }}</code></a>{{ !$loop->last ? ' · ' : '' }}
+            @endforeach
+        </td></tr>
+        @endforeach
+        @if ($challengeAliases->isEmpty())<tr><td class="muted">No duplicate-looking challenge keys.</td></tr>@endif
+    </table>
+    <p class="muted">Split keys split the learning — consider standardising on one key per challenge across platforms.</p>
+</div>
+<div class="card">
     <h2>Confidence calibration <span class="muted">— predicted vs observed success</span></h2>
     <table>
         <tr><th>Confidence range</th><th>Recs</th><th>Predicted</th><th>Observed</th><th>Gap</th></tr>
