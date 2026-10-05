@@ -5,10 +5,22 @@
     <p>
         Filter:
         @foreach (['pending', 'accepted', 'implemented', 'dismissed'] as $s)
-            <a href="{{ route('recommendations.index', ['status' => $s]) }}" class="{{ $status === $s ? 'badge b-'.$s : 'muted' }}">{{ $s }}</a>
+            <a href="{{ route('recommendations.index', array_filter(['status' => $s, 'challenge' => $challenge, 'company_id' => $companyId])) }}" class="{{ $status === $s ? 'badge b-'.$s : 'muted' }}">{{ $s }}</a>
         @endforeach
-        · <a href="{{ route('recommendations.index') }}" class="{{ $status ? 'muted' : '' }}">all</a>
+        · <a href="{{ route('recommendations.index', array_filter(['challenge' => $challenge, 'company_id' => $companyId])) }}" class="{{ $status ? 'muted' : '' }}">all</a>
     </p>
+    <form method="GET" class="inline" style="margin-bottom:.75rem">
+        @if ($status)<input type="hidden" name="status" value="{{ $status }}">@endif
+        <select name="challenge" onchange="this.form.submit()">
+            <option value="">All challenges</option>
+            @foreach ($challenges as $c)
+                <option value="{{ $c }}" {{ $challenge === $c ? 'selected' : '' }}>{{ $c }}</option>
+            @endforeach
+        </select>
+        @if ($challenge || $companyId)
+            <a href="{{ route('recommendations.index', array_filter(['status' => $status])) }}">clear filters</a>
+        @endif
+    </form>
     <table>
         <tr><th>Company</th><th>Challenge</th><th>Recommended</th><th>Conf</th><th>Status</th><th>Outcome</th><th>Created</th></tr>
         @foreach ($recommendations as $r)
