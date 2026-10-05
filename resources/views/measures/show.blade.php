@@ -31,4 +31,21 @@
         @if ($patterns->isEmpty())<tr><td colspan="7" class="muted">No measured outcomes for this measure yet.</td></tr>@endif
     </table>
 </div>
+<div class="card">
+    <h2>Recent recommendations</h2>
+    <table>
+        <tr><th>When</th><th>Company</th><th>Challenge</th><th>Status</th><th>Outcome</th><th></th></tr>
+        @foreach ($recentRecommendations as $r)
+        <tr>
+            <td class="muted">{{ $r->created_at->diffForHumans() }}</td>
+            <td><a href="{{ route('companies.show', $r->company) }}">{{ $r->company?->name }}</a></td>
+            <td><a href="{{ route('challenges.show', $r->challenge_key) }}"><code>{{ $r->challenge_key }}</code></a></td>
+            <td><span class="badge b-{{ $r->status }}">{{ $r->status }}</span></td>
+            <td>@if ($r->outcome)<span class="badge b-{{ $r->outcome->result }}">{{ $r->outcome->result }}</span>@else —@endif</td>
+            <td><a href="{{ route('recommendations.show', $r) }}">view</a></td>
+        </tr>
+        @endforeach
+        @if ($recentRecommendations->isEmpty())<tr><td colspan="6" class="muted">This measure has never been recommended.</td></tr>@endif
+    </table>
+</div>
 @endsection
