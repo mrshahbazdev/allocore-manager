@@ -2,6 +2,9 @@
 @section('content')
 <h1>Companies</h1>
 <div class="card">
+    <form method="GET" action="{{ route('companies.index') }}" style="margin-bottom:.75rem">
+        <input type="text" name="q" value="{{ $q ?? '' }}" placeholder="Search name, ID or industry…" style="max-width:22rem">
+    </form>
     <table>
         <tr><th>Name</th><th>Source</th><th>Industry</th><th>Maturity</th><th>Situation</th><th>Signals</th><th>Recs</th><th>Needs</th><th>Last signal</th></tr>
         @foreach ($companies as $c)
