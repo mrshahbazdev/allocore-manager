@@ -25,6 +25,18 @@
     @endif
 </div>
 
+@if ($alternatives->isNotEmpty())
+<div class="card">
+    <h2>Alternative actions for this challenge</h2>
+    <table>
+        <tr><th>Measure</th><th>Description</th></tr>
+        @foreach ($alternatives as $m)
+        <tr><td><a href="{{ route('measures.show', $m) }}">{{ $m->name }}</a></td><td class="muted">{{ $m->description ?? '—' }}</td></tr>
+        @endforeach
+    </table>
+</div>
+@endif
+
 <div class="card">
     <h2>Outcome</h2>
     @if ($r->outcome)

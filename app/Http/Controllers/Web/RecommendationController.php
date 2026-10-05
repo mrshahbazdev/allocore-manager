@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActionMeasure;
 use App\Models\Outcome;
 use App\Models\Recommendation;
 use App\Services\LearningLoop;
@@ -42,8 +43,16 @@ class RecommendationController extends Controller
     {
         return view('recommendations.show', [
             'recommendation' => $recommendation->load('company', 'actionMeasure', 'signal', 'outcome'),
+            // Other active measures for the same challenge — the
+            // "if not this, then what" answer.
+            'alternatives' => ActionMeasure::where('is_active', true)
+                ->where('id', '!=', $recommendation->action_measure_id)
+                ->get()
+                ->filter(fn ($m) => in_array($recommendation->challenge_key, $m->addresses_challenges ?? []))
+                ->values(),
         ]);
     }
+
     public function update(Request $request, Recommendation $recommendation, LearningLoop $loop)
     {
         $data = $request->validate([
