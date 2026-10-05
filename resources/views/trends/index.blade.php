@@ -11,6 +11,7 @@
     </form>
     <table>
         <tr><th>Challenge</th><th>Recent</th><th>Previous</th><th>Change</th><th>Direction</th></tr>
+
         @foreach ($trends as $t)
         <tr>
             <td><a href="{{ route('challenges.show', $t['challenge_key']) }}">{{ $t['challenge_key'] }}</a></td>
@@ -27,6 +28,21 @@
         </tr>
         @endforeach
         @if ($trends->isEmpty())<tr><td colspan="5" class="muted">No challenge signals in this window.</td></tr>@endif
+    </table>
+</div>
+
+<div class="card">
+    <h2>Brand-new challenges (first ever sighting in the last 7 days)</h2>
+    <table>
+        <tr><th>Challenge</th><th>Signals (7d)</th><th>First seen</th></tr>
+        @foreach ($emerging as $e)
+        <tr>
+            <td><a href="{{ route('challenges.show', $e->challenge_key) }}">{{ $e->challenge_key }}</a></td>
+            <td>{{ $e->recent }}</td>
+            <td class="muted">{{ \Illuminate\Support\Carbon::parse($e->first_seen)->diffForHumans() }}</td>
+        </tr>
+        @endforeach
+        @if ($emerging->isEmpty())<tr><td colspan="3" class="muted">Nothing brand-new this week.</td></tr>@endif
     </table>
 </div>
 @endsection
