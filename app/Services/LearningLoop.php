@@ -48,6 +48,7 @@ class LearningLoop
             );
 
             $pattern->increment('attempts');
+            $pattern->update(['last_outcome_at' => now()]);
 
             match ($result) {
                 Outcome::RESULT_SUCCESS, Outcome::RESULT_PARTIAL => $pattern->increment('successes'),
