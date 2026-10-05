@@ -10,6 +10,19 @@
         <tr><th>Action</th><td>@if ($r->actionMeasure)<a href="{{ route('measures.show', $r->actionMeasure) }}">{{ $r->actionMeasure->name }}</a>@else — @endif</td></tr>
         <tr><th>Confidence</th><td class="conf">{{ $r->confidence !== null ? $r->confidence.'%' : '—' }}</td></tr>
         <tr><th>Status</th><td><span class="badge b-{{ $r->status }}">{{ $r->status }}</span></td></tr>
+        <tr><th>Decide</th><td style="white-space:nowrap">
+            @if ($r->status === 'pending')
+            <form class="inline" method="POST" action="{{ route('recommendations.update', $r) }}">@csrf @method('PATCH')
+                <input type="hidden" name="status" value="accepted"><button>Accept</button></form>
+            <form class="inline" method="POST" action="{{ route('recommendations.update', $r) }}">@csrf @method('PATCH')
+                <input type="hidden" name="status" value="dismissed"><button class="secondary">Dismiss</button></form>
+            @elseif ($r->status === 'accepted')
+            <form class="inline" method="POST" action="{{ route('recommendations.update', $r) }}">@csrf @method('PATCH')
+                <input type="hidden" name="status" value="implemented"><button>Mark implemented</button></form>
+            @else
+                —
+            @endif
+        </td></tr>
         <tr><th>Created</th><td>{{ $r->created_at->toDateTimeString() }} ({{ $r->created_at->diffForHumans() }})</td></tr>
         <tr><th>Trigger signal</th><td>@if ($r->signal)<code>{{ $r->signal->type }}</code> · {{ $r->signal->occurred_at->diffForHumans() }}@else — @endif</td></tr>
     </table>
