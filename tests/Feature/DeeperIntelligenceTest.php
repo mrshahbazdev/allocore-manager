@@ -27,6 +27,23 @@ class DeeperIntelligenceTest extends TestCase
             ->assertOk()->assertSee('user-9')->assertSee('cyber_risk');
     }
 
+    public function test_platform_page_shows_company_health_rows(): void
+    {
+        $source = Source::create(['key' => 's', 'name' => 'S', 'type' => 'saas_platform']);
+        $company = Company::create(['source_id' => $source->id, 'external_id' => 'c', 'name' => 'Acme GmbH']);
+        Signal::create([
+            'source_id' => $source->id, 'company_id' => $company->id,
+            'type' => 'risk.detected', 'challenge_key' => 'backup_risk',
+            'occurred_at' => now(),
+        ]);
+
+        $this->get(route('intelligence.platform', $source))
+            ->assertOk()
+            ->assertSee('Company health')
+            ->assertSee('Acme GmbH')
+            ->assertSee('backup_risk');
+    }
+
     public function test_disavo_page_shows_growth_indicators(): void
     {
         $this->get(route('intelligence.disavo'))
