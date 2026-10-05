@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActionMeasure;
 use App\Models\Pattern;
 use App\Models\Recommendation;
 use App\Models\Signal;
@@ -10,6 +11,21 @@ use Illuminate\Support\Facades\DB;
 
 class ChallengeController extends Controller
 {
+    public function index()
+    {
+        return view('challenges.index', [
+            'challenges' => Signal::whereNotNull('challenge_key')
+                ->select('challenge_key', DB::raw('count(*) as signals'))
+                ->selectRaw('count(distinct company_id) as companies')
+                ->selectRaw('max(occurred_at) as last_seen')
+                ->groupBy('challenge_key')
+                ->orderByDesc('signals')
+                ->get(),
+            'covered' => ActionMeasure::where('is_active', true)
+                ->get()->flatMap->addresses_challenges->unique(),
+        ]);
+    }
+
     public function show(string $challenge)
     {
         $signals = Signal::where('challenge_key', $challenge)
