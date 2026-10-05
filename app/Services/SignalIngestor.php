@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\Recommendation;
 use App\Models\Signal;
 use App\Models\Source;
+use Carbon\Carbon;
 use Illuminate\Support\Arr;
 
 class SignalIngestor
@@ -34,17 +35,31 @@ class SignalIngestor
             );
         }
 
-        $signal = Signal::create([
+        $userId = Arr::get($data, 'user_id') ?? Arr::get($data, 'external_user_id');
+        $occurredAt = Carbon::parse($data['occurred_at'] ?? now());
+
+        // Re-ingesting the same export must not double-count events or
+        // re-fire lifecycle effects — match on the event fingerprint.
+        $signal = Signal::where([
             'source_id' => $source->id,
             'company_id' => $company?->id,
-            'external_user_id' => Arr::get($data, 'user_id'),
+            'external_user_id' => $userId,
+            'type' => $data['type'],
+            'challenge_key' => $data['challenge_key'] ?? null,
+            'occurred_at' => $occurredAt,
+        ])->first() ?? Signal::create([
+            'source_id' => $source->id,
+            'company_id' => $company?->id,
+            'external_user_id' => $userId,
             'type' => $data['type'],
             'challenge_key' => $data['challenge_key'] ?? null,
             'payload' => $data['payload'] ?? null,
-            'occurred_at' => $data['occurred_at'] ?? now(),
+            'occurred_at' => $occurredAt,
         ]);
 
-        $this->applyLifecycleSignal($signal);
+        if ($signal->wasRecentlyCreated) {
+            $this->applyLifecycleSignal($signal);
+        }
 
         return $signal;
     }
