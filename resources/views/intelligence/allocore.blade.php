@@ -16,7 +16,7 @@
         <tr><th>Challenge</th><th>Action</th><th>Cohort</th><th>Attempts</th><th>Success</th><th>Failures</th><th>Top failure reasons</th></tr>
         @foreach ($patterns as $p)
         <tr>
-            <td>{{ $p->challenge_key }}</td>
+            <td><a href="{{ route('challenges.show', $p->challenge_key) }}">{{ $p->challenge_key }}</a></td>
             <td>{{ $p->actionMeasure?->name }}</td>
             <td>{{ $p->cohort }}</td>
             <td>{{ $p->attempts }}</td>

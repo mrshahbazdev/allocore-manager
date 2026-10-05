@@ -6,7 +6,7 @@
     <table>
         <tr><th>Challenge</th><th>Signals</th></tr>
         @foreach ($challengeCounts as $row)
-        <tr><td>{{ $row->challenge_key }}</td><td>{{ $row->total }}</td></tr>
+        <tr><td><a href="{{ route('challenges.show', $row->challenge_key) }}">{{ $row->challenge_key }}</a></td><td>{{ $row->total }}</td></tr>
         @endforeach
         @if ($challengeCounts->isEmpty())<tr><td colspan="2" class="muted">No challenges recorded.</td></tr>@endif
     </table>
@@ -16,7 +16,7 @@
     <table>
         <tr><th>Challenge</th><th>Signals</th></tr>
         @foreach ($risingChallenges as $row)
-        <tr><td>{{ $row->challenge_key }}</td><td>{{ $row->total }}</td></tr>
+        <tr><td><a href="{{ route('challenges.show', $row->challenge_key) }}">{{ $row->challenge_key }}</a></td><td>{{ $row->total }}</td></tr>
         @endforeach
         @if ($risingChallenges->isEmpty())<tr><td colspan="2" class="muted">Nothing rising recently.</td></tr>@endif
     </table>

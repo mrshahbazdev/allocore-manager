@@ -13,7 +13,7 @@
         <tr><th>Challenge</th><th>Recent</th><th>Previous</th><th>Change</th><th>Direction</th></tr>
         @foreach ($trends as $t)
         <tr>
-            <td>{{ $t['challenge_key'] }}</td>
+            <td><a href="{{ route('challenges.show', $t['challenge_key']) }}">{{ $t['challenge_key'] }}</a></td>
             <td>{{ $t['recent'] }}</td>
             <td>{{ $t['previous'] }}</td>
             <td class="{{ $t['direction'] === 'rising' ? 'conf' : 'muted' }}">
