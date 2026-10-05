@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Company;
+use App\Models\Outcome;
 use App\Models\Pattern;
 use App\Models\Recommendation;
 use App\Models\Signal;
@@ -33,12 +34,16 @@ class RecommendationEngine
             ->filter(fn (Pattern $p) => $p->actionMeasure?->is_active)
             ->sortByDesc(fn (Pattern $p) => $p->effectiveRate() ?? 0);
 
-        // Never re-issue a measure that is pending or was already dismissed
-        // for this challenge on this company.
+        // Never re-issue a measure that is pending, was dismissed, or
+        // already failed on this challenge for this company — measured
+        // failure is the strongest "don't recommend again" signal there is.
         $existing = Recommendation::query()
             ->where('company_id', $company->id)
             ->where('challenge_key', $challengeKey)
-            ->whereIn('status', [Recommendation::STATUS_PENDING, Recommendation::STATUS_DISMISSED])
+            ->where(function ($q) {
+                $q->whereIn('status', [Recommendation::STATUS_PENDING, Recommendation::STATUS_DISMISSED])
+                    ->orWhereHas('outcome', fn ($o) => $o->where('result', Outcome::RESULT_FAILURE));
+            })
             ->pluck('action_measure_id');
 
         return $patterns
