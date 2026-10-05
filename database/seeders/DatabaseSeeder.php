@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\ActionMeasure;
 use App\Models\Company;
+use App\Models\Pattern;
 use App\Models\Process;
 use App\Models\Signal;
 use App\Models\Source;
@@ -64,12 +65,36 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // Learned history: a few outcomes already measured.
+        // Prior ecosystem learning: comparable companies already ran the loop.
+        // recommendFor only proposes measures with measured pattern history,
+        // so seed the patterns that history would have produced.
         $loop = app(LearningLoop::class);
         $engine = app(RecommendationEngine::class);
+        foreach (['global', 'growing:compliance_backlog+no_it_team', 'early:compliance_backlog+paper_processes'] as $cohort) {
+            Pattern::create([
+                'cohort' => $cohort,
+                'challenge_key' => 'missing_access_review',
+                'action_measure_id' => $measures[0]->id,
+                'attempts' => 4, 'successes' => 3, 'failures' => 1,
+                'failure_reasons' => ['no_budget'],
+            ]);
+            Pattern::create([
+                'cohort' => $cohort,
+                'challenge_key' => 'unverified_backups',
+                'action_measure_id' => $measures[2]->id,
+                'attempts' => 2, 'successes' => 2, 'failures' => 0,
+            ]);
+        }
+
+        // Fresh recommendations for the current companies, then some run the
+        // loop to completion so decision-path maturity has measured evidence.
+        foreach ($companies as $company) {
+            $engine->refreshFor($company);
+        }
         foreach ($companies->take(4) as $i => $company) {
-            $recs = $engine->recommendFor($company, 'missing_access_review');
-            if ($rec = $recs->first()) {
+            $rec = $company->recommendations()->whereIn('status', ['pending', 'accepted'])->first();
+            if ($rec) {
+                $rec->update(['status' => 'implemented']);
                 $loop->recordOutcome($rec, $i === 3 ? 'failure' : 'success', $i === 3 ? 'no_budget' : null);
             }
         }

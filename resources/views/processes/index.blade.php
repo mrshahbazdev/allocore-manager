@@ -44,4 +44,23 @@
         @if ($processes->isEmpty())<tr><td colspan="6" class="muted">No processes tracked yet.</td></tr>@endif
     </table>
 </div>
+<div class="card">
+    <h2>Decision-path maturity (per challenge)</h2>
+    <p class="muted">Where each challenge's loop stands on the manual → automated ladder, based on measured evidence.</p>
+    <table>
+        <tr><th>Challenge</th><th>Recs</th><th>Implemented</th><th>Outcomes</th><th>Coverage</th><th>Suggested stage</th><th>Why</th></tr>
+        @foreach ($paths as $p)
+        <tr>
+            <td>{{ $p['challenge_key'] }}</td>
+            <td>{{ $p['recommendations'] }}</td>
+            <td>{{ $p['implemented'] }}</td>
+            <td>{{ $p['outcomes'] }}</td>
+            <td>{{ round($p['coverage'] * 100) }}%</td>
+            <td><span class="badge b-accepted">{{ str_replace('_', ' ', $p['suggested_stage']) }}</span></td>
+            <td class="muted">{{ $p['reason'] }}</td>
+        </tr>
+        @endforeach
+        @if ($paths->isEmpty())<tr><td colspan="7" class="muted">No recommendations yet.</td></tr>@endif
+    </table>
+</div>
 @endsection
