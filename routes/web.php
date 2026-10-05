@@ -1,10 +1,15 @@
 <?php
 
+use App\Http\Controllers\Web\ActionMeasureController;
+use App\Http\Controllers\Web\ClusterController;
 use App\Http\Controllers\Web\CompanyController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\IntelligenceController;
+use App\Http\Controllers\Web\ProcessController;
 use App\Http\Controllers\Web\RecommendationController;
 use App\Http\Controllers\Web\SignalController;
+use App\Http\Controllers\Web\SourceController;
+use App\Http\Controllers\Web\TrendController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -12,12 +17,29 @@ Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/signals/new', [SignalController::class, 'create'])->name('signals.create');
 Route::post('/signals', [SignalController::class, 'store'])->name('signals.store');
 
+Route::get('/sources', [SourceController::class, 'index'])->name('sources.index');
+Route::get('/sources/new', [SourceController::class, 'create'])->name('sources.create');
+Route::post('/sources', [SourceController::class, 'store'])->name('sources.store');
+Route::get('/sources/{source}/edit', [SourceController::class, 'edit'])->name('sources.edit');
+Route::patch('/sources/{source}', [SourceController::class, 'update'])->name('sources.update');
+
+Route::get('/measures', [ActionMeasureController::class, 'index'])->name('measures.index');
+Route::get('/measures/new', [ActionMeasureController::class, 'create'])->name('measures.create');
+Route::post('/measures', [ActionMeasureController::class, 'store'])->name('measures.store');
+Route::patch('/measures/{measure}', [ActionMeasureController::class, 'update'])->name('measures.update');
+
 Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
 Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show');
 Route::post('/companies/{company}/refresh', [CompanyController::class, 'refresh'])->name('companies.refresh');
+Route::get('/clusters', [ClusterController::class, 'index'])->name('clusters.index');
 
 Route::patch('/recommendations/{recommendation}', [RecommendationController::class, 'update'])->name('recommendations.update');
 Route::post('/recommendations/{recommendation}/outcome', [RecommendationController::class, 'outcome'])->name('recommendations.outcome');
+
+Route::get('/trends', [TrendController::class, 'index'])->name('trends.index');
+Route::get('/processes', [ProcessController::class, 'index'])->name('processes.index');
+Route::post('/processes', [ProcessController::class, 'store'])->name('processes.store');
+Route::post('/processes/{process}/advance', [ProcessController::class, 'advance'])->name('processes.advance');
 
 Route::get('/intelligence/platform/{source}', [IntelligenceController::class, 'platform'])->name('intelligence.platform');
 Route::get('/intelligence/allocore', [IntelligenceController::class, 'allocore'])->name('intelligence.allocore');
