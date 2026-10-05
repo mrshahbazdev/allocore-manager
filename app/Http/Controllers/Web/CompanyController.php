@@ -19,6 +19,7 @@ class CompanyController extends Controller
                 ->withCount('signals', 'recommendations')
                 ->withCount(['recommendations as pending_recs_count' => fn ($q) => $q->where('status', 'pending')])
                 ->withCount(['recommendations as unmeasured_count' => fn ($q) => $q->where('status', 'implemented')->whereDoesntHave('outcome')])
+                ->withMax('signals', 'occurred_at')
                 ->orderByDesc('pending_recs_count')
                 ->orderByDesc('unmeasured_count')
                 ->paginate(25),
