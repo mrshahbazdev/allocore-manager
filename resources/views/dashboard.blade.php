@@ -9,6 +9,22 @@
     <div class="stat"><div class="num">{{ $stats['outcomes'] }}</div><div class="lbl">Outcomes measured</div></div>
 </div>
 
+@if ($emergingTrends->isNotEmpty())
+<div class="card">
+    <h2>Emerging trends <span class="muted">(last 30 days)</span></h2>
+    <table>
+        <tr><th>Challenge</th><th>Signals</th><th>vs prior 30d</th></tr>
+        @foreach ($emergingTrends as $t)
+        <tr>
+            <td>{{ $t['challenge_key'] }}</td>
+            <td>{{ $t['recent'] }}</td>
+            <td class="conf">{{ $t['growth_pct'] === null ? 'new' : '+'.$t['growth_pct'].'%' }}</td>
+        </tr>
+        @endforeach
+    </table>
+    <p class="muted" style="margin-top:.5rem"><a href="{{ route('trends.index') }}">All trends →</a></p>
+</div>
+@endif
 <div class="card">
     <h2>Data providers</h2>
     <table>

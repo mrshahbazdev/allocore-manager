@@ -10,10 +10,11 @@ use App\Models\Pattern;
 use App\Models\Recommendation;
 use App\Models\Signal;
 use App\Models\Source;
+use App\Services\TrendDetector;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(TrendDetector $detector)
     {
         return view('dashboard', [
             'sources' => Source::withCount('companies', 'signals')->get(),
@@ -26,6 +27,7 @@ class DashboardController extends Controller
             ],
             'recentSignals' => Signal::with('source', 'company')->latest('occurred_at')->limit(15)->get(),
             'topPatterns' => Pattern::with('actionMeasure')->orderByDesc('attempts')->limit(10)->get(),
+            'emergingTrends' => $detector->emerging(30)->take(5),
         ]);
     }
 }
