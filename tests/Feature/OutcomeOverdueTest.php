@@ -18,11 +18,12 @@ class OutcomeOverdueTest extends TestCase
         $source = Source::create(['key' => 's', 'name' => 'S', 'type' => 'saas_platform']);
         $company = Company::create(['source_id' => $source->id, 'external_id' => 'c', 'name' => 'Acme']);
         $measure = ActionMeasure::create(['key' => 'm', 'name' => 'M']);
-        Recommendation::create([
+        $rec = Recommendation::create([
             'company_id' => $company->id, 'action_measure_id' => $measure->id,
             'challenge_key' => 'ch', 'status' => 'implemented', 'confidence' => 70,
-            'updated_at' => now()->subDays(45),
         ]);
+        $rec->timestamps = false;
+        $rec->update(['updated_at' => now()->subDays(45)]);
 
         $this->get(route('companies.show', $company))
             ->assertOk()->assertSee('outcome overdue');
