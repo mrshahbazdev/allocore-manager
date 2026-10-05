@@ -17,7 +17,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [LoginController::class, 'login']);
 });
 
-Route::get('/lang/{locale}', function (string $locale) {
+Route::get('/locale/{locale}', function (string $locale) {
     if (in_array($locale, ['en', 'de'])) {
         session(['locale' => $locale]);
     }
