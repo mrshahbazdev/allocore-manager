@@ -12,6 +12,15 @@
     <p style="font-size:1.1rem;font-weight:700;margin:.25rem 0">{{ $bestNextAction->actionMeasure?->name }}</p>
     <p class="muted">{{ $bestNextAction->rationale['message'] ?? '' }}</p>
     <p class="conf" style="margin-top:.25rem">{{ $bestNextAction->confidence }}% confidence · {{ $bestNextAction->challenge_key }}</p>
+    @if (isset($bestNextAction->rationale['attempts']))
+    <p class="muted" style="margin-top:.25rem">
+        {{ $bestNextAction->rationale['cohort'] ?? '' }} ·
+        {{ $bestNextAction->rationale['attempts'] }} attempts ·
+        {{ $bestNextAction->rationale['success_rate'] ?? '—' }}% success
+        @if (isset($bestNextAction->rationale['evidence_age_days'])) · evidence {{ $bestNextAction->rationale['evidence_age_days'] }}d old @endif
+        @if (($bestNextAction->rationale['dismissals'] ?? 0) > 0) · dismissed {{ $bestNextAction->rationale['dismissals'] }}× @endif
+    </p>
+    @endif
 </div>
 @endif
 <div class="card">
@@ -27,7 +36,18 @@
             <td>{{ $r->challenge_key }}</td>
             <td>{{ $r->actionMeasure?->name }}</td>
             <td class="conf">{{ $r->confidence !== null ? $r->confidence.'%' : '—' }}</td>
-            <td class="muted">{{ $r->rationale['message'] ?? '' }}</td>
+            <td class="muted">
+                {{ $r->rationale['message'] ?? '' }}
+                @if (isset($r->rationale['attempts']))
+                <div style="font-size:.78rem">
+                    {{ $r->rationale['cohort'] ?? '' }} ·
+                    {{ $r->rationale['attempts'] }} attempts ·
+                    {{ $r->rationale['success_rate'] ?? '—' }}% success
+                    @if (isset($r->rationale['evidence_age_days'])) · evidence {{ $r->rationale['evidence_age_days'] }}d old @endif
+                    @if (($r->rationale['dismissals'] ?? 0) > 0) · dismissed {{ $r->rationale['dismissals'] }}× @endif
+                </div>
+                @endif
+            </td>
             <td><span class="badge b-{{ $r->status }}">{{ $r->status }}</span>
                 @if ($r->outcome)<span class="badge b-{{ $r->outcome->result }}">{{ $r->outcome->result }}</span>@endif
             </td>
