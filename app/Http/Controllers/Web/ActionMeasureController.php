@@ -16,9 +16,11 @@ class ActionMeasureController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('measures.create');
+        return view('measures.create', [
+            'prefillChallenge' => $request->query('challenge', ''),
+        ]);
     }
 
     public function show(ActionMeasure $measure)

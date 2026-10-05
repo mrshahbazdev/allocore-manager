@@ -15,6 +15,7 @@
                     <span class="badge b-success">covered</span>
                 @else
                     <span class="badge b-failure">gap</span>
+                    <a href="{{ route('measures.create', ['challenge' => $c->challenge_key]) }}">add measure</a>
                 @endif
             </td>
         </tr>
