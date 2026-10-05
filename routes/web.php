@@ -34,6 +34,7 @@ Route::get('/measures', [ActionMeasureController::class, 'index'])->name('measur
 Route::get('/measures/new', [ActionMeasureController::class, 'create'])->name('measures.create');
 Route::post('/measures', [ActionMeasureController::class, 'store'])->name('measures.store');
 Route::get('/measures/{measure}', [ActionMeasureController::class, 'show'])->name('measures.show');
+Route::get('/measures/{measure}/edit', [ActionMeasureController::class, 'edit'])->name('measures.edit');
 Route::patch('/measures/{measure}', [ActionMeasureController::class, 'update'])->name('measures.update');
 
 Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');

@@ -12,7 +12,8 @@
             <td class="muted">{{ implode(', ', $m->addresses_challenges ?? []) }}</td>
             <td>{{ $m->recommendations_count }}</td>
             <td><span class="badge b-{{ $m->is_active ? 'success' : 'dismissed' }}">{{ $m->is_active ? 'active' : 'inactive' }}</span></td>
-            <td>
+            <td style="white-space:nowrap">
+                <a href="{{ route('measures.edit', $m) }}">Edit</a>
                 <form class="inline" method="POST" action="{{ route('measures.update', $m) }}">@csrf @method('PATCH')
                     <input type="hidden" name="is_active" value="{{ $m->is_active ? 0 : 1 }}">
                     <button class="secondary">{{ $m->is_active ? 'Deactivate' : 'Activate' }}</button>

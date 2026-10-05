@@ -60,10 +60,33 @@ class ActionMeasureController extends Controller
         return redirect()->route('measures.index')->with('status', 'Measure added to catalog.');
     }
 
+    public function edit(ActionMeasure $measure)
+    {
+        return view('measures.edit', ['measure' => $measure]);
+    }
+
     public function update(Request $request, ActionMeasure $measure)
     {
-        $measure->update(['is_active' => $request->boolean('is_active')]);
+        if ($request->has('is_active') && ! $request->has('name')) {
+            $measure->update(['is_active' => $request->boolean('is_active')]);
 
-        return back()->with('status', $measure->is_active ? 'Measure activated.' : 'Measure deactivated.');
+            return back()->with('status', $measure->is_active ? 'Measure activated.' : 'Measure deactivated.');
+        }
+
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'addresses_challenges' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $measure->update([
+            'name' => $data['name'],
+            'description' => $data['description'] ?? null,
+            'addresses_challenges' => collect(explode(',', $data['addresses_challenges'] ?? ''))
+                ->map(fn ($t) => trim($t))->filter()->values()->all(),
+            'is_active' => $request->boolean('is_active'),
+        ]);
+
+        return redirect()->route('measures.show', $measure)->with('status', 'Measure updated.');
     }
 }
