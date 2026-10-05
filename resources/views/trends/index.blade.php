@@ -45,4 +45,21 @@
         @if ($emerging->isEmpty())<tr><td colspan="3" class="muted">Nothing brand-new this week.</td></tr>@endif
     </table>
 </div>
+
+
+@if ($goneQuiet->isNotEmpty())
+<div class="card">
+    <h2>Gone quiet <span class="muted">(active before, zero signals in 14 days)</span></h2>
+    <table>
+        <tr><th>Challenge</th><th>Signals (prior 60d)</th></tr>
+        @foreach ($goneQuiet as $q)
+        <tr>
+            <td><a href="{{ route('challenges.show', $q['challenge_key']) }}">{{ $q['challenge_key'] }}</a></td>
+            <td>{{ $q['previous'] }}</td>
+        </tr>
+        @endforeach
+    </table>
+    <p class="muted" style="margin-top:.4rem">Resolved or simply unobserved — worth confirming before treating as fixed.</p>
+</div>
+@endif
 @endsection
