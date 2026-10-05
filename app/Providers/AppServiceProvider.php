@@ -23,6 +23,12 @@ class AppServiceProvider extends ServiceProvider
     {
         // Pending-decision count badge on the nav — the size of the
         // queue the system is waiting on, visible from every page.
-        View::share('navPendingCount', Recommendation::where('status', Recommendation::STATUS_PENDING)->count());
+        View::composer('layouts.app', function ($view) {
+            try {
+                $view->with('navPendingCount', Recommendation::where('status', Recommendation::STATUS_PENDING)->count());
+            } catch (\Throwable) {
+                $view->with('navPendingCount', 0);
+            }
+        });
     }
 }
