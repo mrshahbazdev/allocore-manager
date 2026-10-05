@@ -10,7 +10,7 @@
             <td><code>{{ $s->key }}</code></td>
             <td><a href="{{ route('sources.show', $s) }}">{{ $s->name }}</a></td>
             <td>{{ $s->type }}</td>
-            <td>{{ $s->companies_count }}</td>
+            <td><a href="{{ route('companies.index', ['source_id' => $s->id]) }}">{{ $s->companies_count }}</a></td>
             <td>{{ $s->signals_count }}</td>
             <td class="muted">{{ $s->signals_max_occurred_at ? \Illuminate\Support\Carbon::parse($s->signals_max_occurred_at)->diffForHumans() : 'never' }}</td>
             <td>
