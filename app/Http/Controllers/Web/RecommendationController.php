@@ -13,6 +13,8 @@ class RecommendationController extends Controller
     public function index(Request $request)
     {
         $status = $request->query('status');
+        $challenge = $request->query('challenge');
+        $companyId = $request->query('company_id');
 
         $query = Recommendation::with('company', 'actionMeasure', 'outcome')
             ->latest();
@@ -20,10 +22,19 @@ class RecommendationController extends Controller
         if (in_array($status, ['pending', 'accepted', 'implemented', 'dismissed'])) {
             $query->where('status', $status);
         }
+        if ($challenge) {
+            $query->where('challenge_key', $challenge);
+        }
+        if ($companyId) {
+            $query->where('company_id', (int) $companyId);
+        }
 
         return view('recommendations.index', [
             'recommendations' => $query->limit(200)->get(),
             'status' => $status,
+            'challenge' => $challenge,
+            'companyId' => $companyId,
+            'challenges' => Recommendation::whereNotNull('challenge_key')->distinct()->orderBy('challenge_key')->pluck('challenge_key'),
         ]);
     }
 
