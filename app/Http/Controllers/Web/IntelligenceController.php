@@ -102,6 +102,7 @@ class IntelligenceController extends Controller
                 : null,
             'patterns' => Pattern::with('actionMeasure')->orderByDesc('attempts')->limit(50)->get(),
             'coverageGaps' => $this->coverageGaps(),
+            'calibration' => $this->calibration(),
         ]);
     }
 
@@ -120,6 +121,31 @@ class IntelligenceController extends Controller
             ->orderByDesc('signals')
             ->get()
             ->reject(fn ($row) => $covered->contains($row->challenge_key))
+            ->values();
+    }
+
+    /**
+     * Model-quality check: for recommendations with a measured outcome,
+     * does predicted confidence match the observed success fraction?
+     * Bucketed by confidence decile.
+     */
+    private function calibration()
+    {
+        return Recommendation::whereHas('outcome')
+            ->with('outcome')
+            ->get()
+            ->groupBy(fn ($r) => min(9, intdiv((int) $r->confidence, 10)) * 10)
+            ->map(function ($bucket, $decile) {
+                $successes = $bucket->filter(fn ($r) => in_array($r->outcome->result, ['success', 'partial']))->count();
+
+                return [
+                    'range' => $decile.'–'.($decile + 9).'%',
+                    'count' => $bucket->count(),
+                    'predicted' => round($bucket->avg('confidence'), 1),
+                    'observed' => round($successes / $bucket->count() * 100, 1),
+                ];
+            })
+            ->sortKeys()
             ->values();
     }
 
