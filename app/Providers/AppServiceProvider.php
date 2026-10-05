@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Recommendation;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Pending-decision count badge on the nav — the size of the
+        // queue the system is waiting on, visible from every page.
+        View::composer('layouts.app', function ($view) {
+            try {
+                $view->with('navPendingCount', Recommendation::where('status', Recommendation::STATUS_PENDING)->count());
+            } catch (\Throwable) {
+                $view->with('navPendingCount', 0);
+            }
+        });
     }
 }

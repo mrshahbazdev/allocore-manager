@@ -46,7 +46,7 @@
     <a href="{{ route('companies.index') }}">Companies</a>
     <a href="{{ route('clusters.index') }}">Clusters</a>
     <a href="{{ route('users.index') }}">Users</a>
-    <a href="{{ route('recommendations.index') }}">Recommendations</a>
+    <a href="{{ route('recommendations.index') }}">Recommendations{!! $navPendingCount ? " <span class='badge b-pending'>{$navPendingCount}</span>" : '' !!}</a>
     <a href="{{ route('signals.index') }}">Signals</a>
     <a href="{{ route('signals.create') }}">New Signal</a>
     <a href="{{ route('sources.index') }}">Sources</a>
