@@ -7,14 +7,19 @@ use App\Models\ActionMeasure;
 use App\Models\Pattern;
 use App\Models\Recommendation;
 use App\Models\Signal;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ChallengeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $q = trim((string) $request->query('q', ''));
+
         return view('challenges.index', [
+            'q' => $q,
             'challenges' => Signal::whereNotNull('challenge_key')
+                ->when($q !== '', fn ($w) => $w->where('challenge_key', 'like', "%{$q}%"))
                 ->select('challenge_key', DB::raw('count(*) as signals'))
                 ->selectRaw('count(distinct company_id) as companies')
                 ->selectRaw('max(occurred_at) as last_seen')
