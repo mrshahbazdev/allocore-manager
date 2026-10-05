@@ -7,6 +7,22 @@
     <div class="stat"><div class="num">{{ $byResult['failure'] ?? 0 }}</div><div class="lbl">Failure</div></div>
 </div>
 <div class="card">
+    <form method="GET" style="margin-bottom:.75rem">
+        <select name="result">
+            <option value="">All results</option>
+            @foreach (['success', 'partial', 'failure'] as $r)
+                <option value="{{ $r }}" @selected($result === $r)>{{ $r }}</option>
+            @endforeach
+        </select>
+        <select name="challenge">
+            <option value="">All challenges</option>
+            @foreach ($challenges as $ck)
+                <option value="{{ $ck }}" @selected($challenge === $ck)>{{ $ck }}</option>
+            @endforeach
+        </select>
+        <button>Filter</button>
+        <a href="{{ route('outcomes.index') }}">clear</a>
+    </form>
     <table>
         <tr><th>Measured</th><th>Company</th><th>Challenge</th><th>Measure</th><th>Result</th><th>Why it failed</th></tr>
         @foreach ($outcomes as $o)
