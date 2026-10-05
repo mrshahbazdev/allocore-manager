@@ -42,6 +42,14 @@ class UserIntelligenceController extends Controller
             'externalUserId' => $externalUserId,
             'signals' => $signals,
             'recommendations' => $recommendations,
+            'topChallenges' => Signal::where('external_user_id', $externalUserId)
+                ->whereNotNull('challenge_key')
+                ->select('challenge_key', DB::raw('count(*) as total'))
+                ->groupBy('challenge_key')
+                ->orderByDesc('total')
+                ->limit(5)
+                ->get(),
+            'companyCount' => $companyIds->count(),
         ]);
     }
 }
