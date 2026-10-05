@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActionMeasure;
 use App\Models\Company;
 use App\Models\Outcome;
 use App\Models\Pattern;
@@ -84,7 +85,26 @@ class IntelligenceController extends Controller
                 ? round(Outcome::whereIn('result', ['success', 'partial'])->count() / Outcome::count() * 100, 1)
                 : null,
             'patterns' => Pattern::with('actionMeasure')->orderByDesc('attempts')->limit(50)->get(),
+            'coverageGaps' => $this->coverageGaps(),
         ]);
+    }
+
+    /**
+     * Challenges the ecosystem is signalling but no active measure
+     * addresses — risks the system cannot yet recommend against.
+     */
+    private function coverageGaps()
+    {
+        $covered = ActionMeasure::where('is_active', true)->get()->flatMap->addresses_challenges->unique();
+
+        return Signal::whereNotNull('challenge_key')
+            ->select('challenge_key', DB::raw('count(*) as signals'))
+            ->selectRaw('count(distinct company_id) as companies')
+            ->groupBy('challenge_key')
+            ->orderByDesc('signals')
+            ->get()
+            ->reject(fn ($row) => $covered->contains($row->challenge_key))
+            ->values();
     }
 
     /**

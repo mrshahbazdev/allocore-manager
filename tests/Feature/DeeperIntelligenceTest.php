@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ActionMeasure;
 use App\Models\Company;
 use App\Models\Signal;
 use App\Models\Source;
@@ -30,5 +31,22 @@ class DeeperIntelligenceTest extends TestCase
     {
         $this->get(route('intelligence.disavo'))
             ->assertOk()->assertSee('Growth indicators')->assertSee('New companies');
+    }
+
+    public function test_allocore_page_surfaces_challenges_with_no_measure(): void
+    {
+        $source = Source::create(['key' => 's', 'name' => 'S', 'type' => 'saas_platform']);
+        $company = Company::create(['source_id' => $source->id, 'external_id' => 'c']);
+        Signal::create([
+            'source_id' => $source->id, 'company_id' => $company->id,
+            'type' => 'risk.detected', 'challenge_key' => 'orphan_risk',
+            'occurred_at' => now(),
+        ]);
+        ActionMeasure::create(['key' => 'm', 'name' => 'M', 'addresses_challenges' => ['covered_risk']]);
+
+        $this->get(route('intelligence.allocore'))
+            ->assertOk()
+            ->assertSee('Coverage gaps')
+            ->assertSee('orphan_risk');
     }
 }
