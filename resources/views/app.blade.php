@@ -131,10 +131,10 @@
   @forelse($open as $rec)
     <div class="card sev-{{ $rec->severity }}">
       <div class="top">
-        <div class="t">{{ $rec->title }}</div>
+        <div class="t">{{ $rec->localizedTitle() }}</div>
         <span class="pill {{ $rec->severity }}">{{ __('ui.'.$rec->severity) }}</span>
       </div>
-      <div class="d">{{ $rec->description }}</div>
+      <div class="d">{{ $rec->localizedDescription() }}</div>
       @php $tried=(int)($rec->evidence['companies_tried']??0); @endphp
       @if($tried>0)<div class="e">{{ __('ui.evidence', ['tried'=>$tried,'rate'=>$rec->evidence['success_rate']??0]) }}</div>@endif
       @if(!empty($rec->evidence['effort']) || !empty($rec->evidence['responsible']))
@@ -158,10 +158,10 @@
     @foreach($done as $rec)
       <div class="card done">
         <div class="top">
-          <div class="t">{{ $rec->title }}</div>
+          <div class="t">{{ $rec->localizedTitle() }}</div>
           <span class="pill info">{{ __('ui.'.($rec->latestOutcome?->result ?? $rec->status)) }}</span>
         </div>
-        <div class="d">{{ $rec->description }}</div>
+        <div class="d">{{ $rec->localizedDescription() }}</div>
       </div>
     @endforeach
   @endif

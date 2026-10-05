@@ -9,7 +9,17 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Recommendation extends Model
 {
-    protected $fillable = ['user_id', 'company_key', 'pattern_id', 'code', 'title', 'description', 'evidence', 'severity', 'status'];
+    protected $fillable = ['user_id', 'company_key', 'pattern_id', 'code', 'title', 'title_en', 'description', 'description_en', 'evidence', 'severity', 'status'];
+
+    public function localizedTitle(): string
+    {
+        return app()->getLocale() === 'en' && $this->title_en ? $this->title_en : $this->title;
+    }
+
+    public function localizedDescription(): string
+    {
+        return app()->getLocale() === 'en' && $this->description_en ? $this->description_en : $this->description;
+    }
 
     protected function casts(): array
     {
