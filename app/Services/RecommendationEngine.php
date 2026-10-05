@@ -34,7 +34,8 @@ class RecommendationEngine
             ->filter(fn (Pattern $p) => $p->actionMeasure?->is_active)
             // Evidence from companies like this one outranks ecosystem-wide
             // evidence, unless the global pattern is dramatically stronger.
-            ->sortByDesc(fn (Pattern $p) => ($p->effectiveRate() ?? 0)
+            // Evidence shrink: few-attempt patterns can't outrank deep evidence.
+            ->sortByDesc(fn (Pattern $p) => ($p->evidenceAdjustedRate() ?? 0)
                 + ($p->cohort === $cohort ? 15 : 0));
 
         // Never re-issue a measure that is pending, was dismissed, or
@@ -57,7 +58,7 @@ class RecommendationEngine
                     'company_id' => $company->id,
                     'action_measure_id' => $pattern->action_measure_id,
                     'challenge_key' => $challengeKey,
-                    'confidence' => $pattern->effectiveRate(),
+                    'confidence' => $pattern->evidenceAdjustedRate(),
                     'signal_id' => $trigger?->id,
                     'status' => Recommendation::STATUS_PENDING,
                     'rationale' => [

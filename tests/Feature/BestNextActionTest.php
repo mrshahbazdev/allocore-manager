@@ -59,7 +59,7 @@ class BestNextActionTest extends TestCase
         $recs = $this->engine->recommendFor($this->company, 'ch');
 
         $this->assertEquals('Fresh', $recs->first()->actionMeasure->name);
-        $this->assertEquals(50.0, $recs->firstWhere('action_measure_id', $stale->id)->confidence);
+        $this->assertEquals(41.7, $recs->firstWhere('action_measure_id', $stale->id)->confidence);
     }
 
     public function test_dismissed_measures_are_not_recommended_again(): void
