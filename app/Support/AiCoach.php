@@ -15,7 +15,7 @@ class AiCoach
 {
     public static function available(): bool
     {
-        return (bool) env('OPENAI_API_KEY');
+        return (bool) config('services.openai.key');
     }
 
     /**
@@ -53,10 +53,10 @@ class AiCoach
         ];
 
         try {
-            $response = Http::withToken(env('OPENAI_API_KEY'))
+            $response = Http::withToken(config('services.openai.key'))
                 ->timeout(20)
-                ->post(rtrim(env('OPENAI_BASE_URL', 'https://api.openai.com/v1'), '/').'/chat/completions', [
-                    'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
+                ->post(rtrim(config('services.openai.base_url'), '/').'/chat/completions', [
+                    'model' => config('services.openai.model', 'gpt-4o-mini'),
                     'messages' => $messages,
                     'temperature' => 0.4,
                     'max_tokens' => 150,
