@@ -148,4 +148,6 @@ return [
     'Note (optional)' => 'Notiz (optional)',
     'Note' => 'Notiz',
     'Last signal' => 'Letztes Signal',
+    'Reopen' => 'Erneut öffnen',
+    'reopened' => 'Empfehlung erneut geöffnet.',
 ];

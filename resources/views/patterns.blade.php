@@ -21,7 +21,7 @@
   <tbody>
   @forelse($patterns as $p)
     <tr>
-      <td><span class="chip">{{ $p->code }}</span></td>
+      <td><a href="{{ route('recommendations', ['code' => $p->code]) }}" class="chip" style="text-decoration:none;color:var(--accent)">{{ $p->code }}</a></td>
       <td><b>{{ $p->challenge }}</b></td>
       <td class="num">{{ $p->companies_count }}</td>
       <td class="num">{{ $p->evidence['signals_30d'] ?? $p->evidence['suggestions'] ?? 0 }}</td>

@@ -30,5 +30,9 @@
     @if($rec->latestOutcome?->note)
       <div class="meta"><span><b>{{ __('ui.Note') }}</b> · {{ $rec->latestOutcome->note }}</span></div>
     @endif
+    <form method="post" action="{{ route('recommendations.reopen', $rec) }}" style="margin-top:8px">
+      @csrf
+      <button type="submit" style="padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;font-family:inherit;font-size:12px;cursor:pointer;color:var(--muted)">{{ __('ui.Reopen') }}</button>
+    </form>
   @endif
 </div>

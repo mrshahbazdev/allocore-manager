@@ -37,11 +37,19 @@ class DashboardController extends Controller
         $user = $request->user();
         $recs = $this->recommendationsFor($user);
 
+        $code = $request->query('code');
+        $codes = $recs->pluck('code')->filter()->unique()->sort()->values();
+        if ($code) {
+            $recs = $recs->where('code', $code);
+        }
+
         return view('recommendations', [
             'user' => $user,
             'open' => $recs->where('status', 'open')->values(),
             'done' => $recs->whereIn('status', ['done', 'dismissed', 'expired'])->values(),
             'navOpen' => $recs->where('status', 'open')->count(),
+            'codes' => $codes,
+            'activeCode' => $code,
         ]);
     }
 

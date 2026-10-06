@@ -23,4 +23,14 @@ class OutcomeController extends Controller
 
         return back()->with('status', 'ui.outcome_recorded');
     }
+
+    public function reopen(Recommendation $recommendation): RedirectResponse
+    {
+        abort_unless(in_array($recommendation->status, ['done', 'dismissed', 'expired']), 422);
+
+        $recommendation->status = 'open';
+        $recommendation->save();
+
+        return back()->with('status', 'ui.reopened');
+    }
 }
