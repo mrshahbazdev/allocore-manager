@@ -125,4 +125,13 @@ return [
     'Role' => 'Role',
     'user_updated' => 'User updated.',
     'cannot_demote_self' => 'You cannot change your own admin role.',
+    'Learning' => 'Learning',
+    'learning_sub' => 'Effectiveness of each recommendation rule, measured from outcomes across companies.',
+    'Overall success rate' => 'Overall success rate',
+    'Rule' => 'Rule',
+    'Recommendations' => 'Recommendations',
+    'Tried' => 'Tried',
+    'Succeeded' => 'Succeeded',
+    'Success rate' => 'Success rate',
+    'No rules yet.' => 'No rules yet.',
 ];

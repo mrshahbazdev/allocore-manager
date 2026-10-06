@@ -81,6 +81,42 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function learning(Request $request)
+    {
+        $user = $request->user();
+        abort_unless($user->role === 'allocore', 403);
+
+        $navOpen = $this->recommendationsFor($user)->where('status', 'open')->count();
+
+        $rules = Recommendation::selectRaw('code, count(*) as n')
+            ->groupBy('code')
+            ->orderByDesc('n')
+            ->get()
+            ->map(function ($r) {
+                $eff = DecisionEngine::effectiveness($r->code);
+                $ids = Recommendation::where('code', $r->code)->pluck('id');
+                $outcomes = Outcome::whereIn('recommendation_id', $ids)->selectRaw('result, count(*) as n')->groupBy('result')->pluck('n', 'result');
+
+                return (object) [
+                    'code' => $r->code,
+                    'recommendations' => $r->n,
+                    'open' => Recommendation::where('code', $r->code)->where('status', 'open')->count(),
+                    'tried' => $eff['tried'],
+                    'succeeded' => (int) ($outcomes['success'] ?? 0),
+                    'failed' => (int) ($outcomes['failed'] ?? 0),
+                    'dismissed' => (int) ($outcomes['dismissed'] ?? 0),
+                    'success_rate' => $eff['success_rate'],
+                ];
+            });
+
+        return view('learning', [
+            'user' => $user,
+            'navOpen' => $navOpen,
+            'rules' => $rules,
+            'overall' => $this->successRate(),
+        ]);
+    }
+
     private function recommendationsFor($user)
     {
         return Recommendation::query()

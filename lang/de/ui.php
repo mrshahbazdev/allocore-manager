@@ -125,4 +125,13 @@ return [
     'Role' => 'Rolle',
     'user_updated' => 'Benutzer aktualisiert.',
     'cannot_demote_self' => 'Sie können Ihre eigene Admin-Rolle nicht ändern.',
+    'Learning' => 'Lernen',
+    'learning_sub' => 'Wirksamkeit jeder Empfehlungsregel, gemessen an Ergebnissen über Unternehmen hinweg.',
+    'Overall success rate' => 'Gesamt-Erfolgsquote',
+    'Rule' => 'Regel',
+    'Recommendations' => 'Empfehlungen',
+    'Tried' => 'Angewendet',
+    'Succeeded' => 'Erfolgreich',
+    'Success rate' => 'Erfolgsquote',
+    'No rules yet.' => 'Noch keine Regeln.',
 ];
