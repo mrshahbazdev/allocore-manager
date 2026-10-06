@@ -151,4 +151,5 @@ return [
     'Reopen' => 'Erneut öffnen',
     'reopened' => 'Empfehlung erneut geöffnet.',
     'Neu' => 'Neu',
+    'Copy' => 'Kopieren',
 ];

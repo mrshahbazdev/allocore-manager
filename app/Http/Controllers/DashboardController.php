@@ -43,6 +43,12 @@ class DashboardController extends Controller
             $recs = $recs->where('code', $code);
         }
 
+        $company = $request->query('company');
+        $companies = $recs->pluck('company_key')->filter()->unique()->sort()->values();
+        if ($company) {
+            $recs = $recs->where('company_key', $company);
+        }
+
         return view('recommendations', [
             'user' => $user,
             'open' => $this->sortBySeverity($recs->where('status', 'open')->values()),
@@ -50,6 +56,8 @@ class DashboardController extends Controller
             'navOpen' => $recs->where('status', 'open')->count(),
             'codes' => $codes,
             'activeCode' => $code,
+            'companies' => $companies,
+            'activeCompany' => $company,
         ]);
     }
 

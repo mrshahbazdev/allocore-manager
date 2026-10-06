@@ -20,6 +20,17 @@
   </div>
 @endif
 
+@if($companies->count() > 1)
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+    @foreach($companies as $c)
+      <a href="{{ route('recommendations', array_filter(['company' => $c, 'code' => $activeCode])) }}" class="chip" style="text-decoration:none;{{ $activeCompany === $c ? 'outline:1px solid var(--accent)' : '' }}">{{ $c }}</a>
+    @endforeach
+    @if($activeCompany)
+      <a href="{{ route('recommendations', array_filter(['code' => $activeCode])) }}" class="chip" style="text-decoration:none">× {{ __('ui.All companies') }}</a>
+    @endif
+  </div>
+@endif
+
 @forelse($open as $rec)
   @include('recommendation-card')
 @empty

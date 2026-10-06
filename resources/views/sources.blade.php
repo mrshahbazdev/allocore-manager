@@ -28,8 +28,8 @@
   @forelse($sources as $s)
     <tr>
       <td><b>{{ $s->name }}</b></td>
-      <td><span class="chip">{{ \Illuminate\Support\Str::limit($s->token, 12, '…') }}</span></td>
-      <td><span class="chip">POST /ingest/{{ \Illuminate\Support\Str::limit($s->token, 10, '…') }}</span></td>
+      <td><span class="chip" role="button" style="cursor:pointer" title="{{ __('ui.Copy') }}" onclick="navigator.clipboard.writeText('{{ $s->token }}')">{{ \Illuminate\Support\Str::limit($s->token, 12, '…') }}</span></td>
+      <td><span class="chip" role="button" style="cursor:pointer" title="{{ __('ui.Copy') }}" onclick="navigator.clipboard.writeText('{{ rtrim(config('app.url'), '/').'/ingest/'.$s->token }}')">POST /ingest/{{ \Illuminate\Support\Str::limit($s->token, 10, '…') }}</span></td>
       <td class="num">{{ $s->signals_count }}</td>
       <td>{{ $s->signals_max_occurred_at ? \Illuminate\Support\Carbon::parse($s->signals_max_occurred_at)->format('d.m.Y H:i') : '—' }}</td>
       <td style="text-align:right">

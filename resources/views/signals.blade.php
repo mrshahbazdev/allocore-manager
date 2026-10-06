@@ -37,7 +37,16 @@
     <tr><th>{{ __('ui.Signal type') }}</th><th>{{ __('ui.Company') }}</th><th>{{ __('ui.Source') }}</th><th>{{ __('ui.Occurred') }}</th></tr>
     @foreach($signals as $s)
       <tr>
-        <td><span class="chip">{{ $s->type }}</span></td>
+        <td>
+          <details>
+            <summary style="cursor:pointer"><span class="chip">{{ $s->type }}</span></summary>
+            @if($s->payload)
+              <pre style="margin:8px 0 0;padding:10px;background:#f4f5f6;border:1px solid var(--line);border-radius:8px;font-size:11.5px;white-space:pre-wrap;max-width:420px">{{ json_encode($s->payload, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) }}</pre>
+            @else
+              <div style="margin-top:8px;color:var(--faint);font-size:12px">—</div>
+            @endif
+          </details>
+        </td>
         <td>{{ $s->company_key ?? '—' }}</td>
         <td>{{ $s->source->name ?? '—' }}</td>
         <td class="num">{{ $s->occurred_at?->format('d.m.Y H:i') }}</td>

@@ -151,4 +151,5 @@ return [
     'Reopen' => 'Reopen',
     'reopened' => 'Recommendation reopened.',
     'Neu' => 'New',
+    'Copy' => 'Copy',
 ];
