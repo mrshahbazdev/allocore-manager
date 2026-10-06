@@ -27,6 +27,9 @@ Route::get('/locale/{locale}', function (string $locale) {
 
 Route::middleware('auth')->group(function () {
     Route::get('/app', [DashboardController::class, 'index'])->name('app');
+    Route::get('/app/recommendations', [DashboardController::class, 'recommendations'])->name('recommendations');
+    Route::get('/app/signals', [DashboardController::class, 'signals'])->name('signals');
+    Route::get('/app/companies', [DashboardController::class, 'companies'])->name('companies');
     Route::post('/recommendations/{recommendation}/outcome', [OutcomeController::class, 'store'])->name('outcome');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });

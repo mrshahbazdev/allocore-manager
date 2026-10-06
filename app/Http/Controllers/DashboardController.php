@@ -14,8 +14,76 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+        $recs = $this->recommendationsFor($user);
 
-        $recs = Recommendation::query()
+        $open = $recs->where('status', 'open')->values();
+        $done = $recs->whereIn('status', ['done', 'dismissed'])->values();
+
+        return view('dashboard', [
+            'user' => $user,
+            'open' => $open,
+            'done' => $done,
+            'navOpen' => $open->count(),
+            'stats' => $this->stats($open, $done),
+            'recentSignals' => Signal::with('source')->latest('occurred_at')->limit(8)->get(),
+            'platformIntel' => in_array($user->role, ['platform_manager', 'allocore']) ? $this->platformIntel() : null,
+            'allocoreIntel' => $user->role === 'allocore' ? $this->allocoreIntel() : null,
+            'disavoIntel' => $user->role === 'disavo' ? $this->disavoIntel() : null,
+        ]);
+    }
+
+    public function recommendations(Request $request)
+    {
+        $user = $request->user();
+        $recs = $this->recommendationsFor($user);
+
+        return view('recommendations', [
+            'user' => $user,
+            'open' => $recs->where('status', 'open')->values(),
+            'done' => $recs->whereIn('status', ['done', 'dismissed'])->values(),
+            'navOpen' => $recs->where('status', 'open')->count(),
+        ]);
+    }
+
+    public function signals(Request $request)
+    {
+        $user = $request->user();
+        $navOpen = $this->recommendationsFor($user)->where('status', 'open')->count();
+
+        return view('signals', [
+            'user' => $user,
+            'navOpen' => $navOpen,
+            'signals' => Signal::with('source')->latest('occurred_at')->paginate(50),
+        ]);
+    }
+
+    public function companies(Request $request)
+    {
+        $user = $request->user();
+        $navOpen = $this->recommendationsFor($user)->where('status', 'open')->count();
+
+        $companies = Signal::selectRaw('company_key, count(*) as n')
+            ->whereNotNull('company_key')
+            ->groupBy('company_key')
+            ->orderByDesc('n')
+            ->get()
+            ->map(function ($c) {
+                $open = Recommendation::where('company_key', $c->company_key)->where('status', 'open')->count();
+                $done = Recommendation::where('company_key', $c->company_key)->whereIn('status', ['done', 'dismissed'])->count();
+
+                return (object) ['company_key' => $c->company_key, 'signals' => $c->n, 'open' => $open, 'done' => $done];
+            });
+
+        return view('companies', [
+            'user' => $user,
+            'navOpen' => $navOpen,
+            'companies' => $companies,
+        ]);
+    }
+
+    private function recommendationsFor($user)
+    {
+        return Recommendation::query()
             ->with('latestOutcome')
             ->when($user->role === 'member' && $user->company_key,
                 fn ($q) => $q->where(fn ($q2) => $q2->where('company_key', $user->company_key)->orWhereNull('company_key')))
@@ -24,26 +92,16 @@ class DashboardController extends Controller
             ->orderByRaw("case severity when 'critical' then 0 when 'warning' then 1 else 2 end")
             ->orderByDesc('created_at')
             ->get();
+    }
 
-        $open = $recs->where('status', 'open')->values();
-        $done = $recs->whereIn('status', ['done', 'dismissed'])->values();
-
-        $stats = [
+    private function stats($open, $done): array
+    {
+        return [
             'signals' => Signal::count(),
             'open' => $open->count(),
             'done' => $done->count(),
             'success_rate' => $this->successRate(),
         ];
-
-        return view('app', [
-            'user' => $user,
-            'open' => $open,
-            'done' => $done,
-            'stats' => $stats,
-            'platformIntel' => in_array($user->role, ['platform_manager', 'allocore']) ? $this->platformIntel() : null,
-            'allocoreIntel' => $user->role === 'allocore' ? $this->allocoreIntel() : null,
-            'disavoIntel' => $user->role === 'disavo' ? $this->disavoIntel() : null,
-        ]);
     }
 
     private function successRate(): ?int
