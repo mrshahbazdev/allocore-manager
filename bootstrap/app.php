@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\RunDecisionEngineHourly;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->validateCsrfTokens(except: ['ingest/*']);
-        $middleware->web(append: [SetLocale::class, RunDecisionEngineHourly::class]);
+        $middleware->web(prepend: [SecurityHeaders::class], append: [SetLocale::class, RunDecisionEngineHourly::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

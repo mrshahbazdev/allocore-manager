@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Signal;
 use App\Support\DecisionEngine;
 use Closure;
 use Illuminate\Http\Request;
@@ -34,6 +35,14 @@ class RunDecisionEngineHourly
             app(DecisionEngine::class)->run();
         } catch (\Throwable) {
             // Never break the page for a background recompute.
+        }
+
+        if (Cache::lock('decisions:prune-lock', 86000)->get()) {
+            try {
+                Signal::where('created_at', '<', now()->subDays(180))->delete();
+            } catch (\Throwable) {
+                // Never break the page for a background prune.
+            }
         }
     }
 }
