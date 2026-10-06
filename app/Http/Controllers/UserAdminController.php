@@ -17,6 +17,7 @@ class UserAdminController extends Controller
         abort_unless($request->user()->role === 'allocore', 403);
 
         return view('users', [
+            'user' => $request->user(),
             'users' => User::orderBy('name')->get(),
             'roles' => self::ROLES,
         ]);

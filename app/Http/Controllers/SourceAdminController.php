@@ -20,6 +20,7 @@ class SourceAdminController extends Controller
         $this->gate($request);
 
         return view('sources', [
+            'user' => $request->user(),
             'sources' => Source::withCount('signals')->orderBy('name')->get(),
         ]);
     }
