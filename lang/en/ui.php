@@ -82,6 +82,7 @@ return [
     'Forgot your password?' => 'Forgot your password?',
     'Create account' => 'Create account',
     'Name' => 'Name',
+    'Token' => 'Token',
     'Company' => 'Company',
     'optional' => 'optional',
     'Confirm password' => 'Confirm password',

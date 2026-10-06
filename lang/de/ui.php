@@ -82,6 +82,7 @@ return [
     'Forgot your password?' => 'Passwort vergessen?',
     'Create account' => 'Konto erstellen',
     'Name' => 'Name',
+    'Token' => 'Token',
     'Company' => 'Unternehmen',
     'optional' => 'optional',
     'Confirm password' => 'Passwort bestätigen',
