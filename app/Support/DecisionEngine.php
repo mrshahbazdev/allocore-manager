@@ -18,16 +18,16 @@ class DecisionEngine
 {
     /**
      * Rules: signal type prefix → challenge + recommended action.
-     * Each entry: [code, challenge_de, challenge_en, action_de, action_en, severity, min_count]
+     * Each entry: [code, challenge_de, challenge_en, action_de, action_en, severity, min_count, effort, responsible]
      */
     private const RULES = [
-        ['invoice.overdue', 'Ausstehende Rechnungen', 'Outstanding invoices', 'Offene Rechnungen — Schuldner kontaktieren und Zahlungserinnerung setzen.', 'Outstanding invoices — contact the debtor and set a payment reminder.', 'warning', 1],
-        ['order.overdue', 'Verspätete Aufträge', 'Late orders', 'Produktionsaufträge sind verspätet — betroffene Aufträge neu planen und Kunden informieren.', 'Production orders are late — re-plan the affected orders and inform the customer.', 'critical', 1],
-        ['machine.maintenance', 'Maschinenstillstand', 'Machine downtime', 'Eine Maschine ist in Wartung — offene Aufträge auf freie Kapazität verlegen.', 'A machine is in maintenance — reschedule its open orders to free capacity.', 'warning', 1],
-        ['complaint', 'Kundenreklamation', 'Customer complaint', 'Eine Reklamation wurde eingereicht — Fall prüfen und Korrekturmaßnahme erfassen.', 'A complaint was filed — review the case and record a corrective measure.', 'critical', 1],
-        ['report.missing', 'Fehlende Berichte', 'Missing reports', 'Ein Monatsbericht fehlt — fehlenden Finanzbericht für das Unternehmen einreichen.', 'A monthly report is missing — file the missing financial report for the company.', 'info', 1],
-        ['deadline.due', 'Nahende Frist', 'Upcoming deadline', 'Eine Compliance-Frist läuft bald ab — Aufgabe vor Ablauf erledigen.', 'A compliance deadline is near — complete the task before it expires.', 'warning', 1],
-        ['risk.high', 'Hohes Risiko', 'High risk', 'Eine Risikobeurteilung mit hohem Risiko ist offen — Verantwortlichen zuweisen und Maßnahmen definieren.', 'A high-risk assessment is open — assign a responsible person and define measures.', 'critical', 1],
+        ['invoice.overdue', 'Ausstehende Rechnungen', 'Outstanding invoices', 'Offene Rechnungen — Schuldner kontaktieren und Zahlungserinnerung setzen.', 'Outstanding invoices — contact the debtor and set a payment reminder.', 'warning', 1, 'small', 'Buchhaltung'],
+        ['order.overdue', 'Verspätete Aufträge', 'Late orders', 'Produktionsaufträge sind verspätet — betroffene Aufträge neu planen und Kunden informieren.', 'Production orders are late — re-plan the affected orders and inform the customer.', 'critical', 1, 'medium', 'Produktionsleitung'],
+        ['machine.maintenance', 'Maschinenstillstand', 'Machine downtime', 'Eine Maschine ist in Wartung — offene Aufträge auf freie Kapazität verlegen.', 'A machine is in maintenance — reschedule its open orders to free capacity.', 'warning', 1, 'small', 'Instandhaltung'],
+        ['complaint', 'Kundenreklamation', 'Customer complaint', 'Eine Reklamation wurde eingereicht — Fall prüfen und Korrekturmaßnahme erfassen.', 'A complaint was filed — review the case and record a corrective measure.', 'critical', 1, 'medium', 'Qualitätsmanagement'],
+        ['report.missing', 'Fehlende Berichte', 'Missing reports', 'Ein Monatsbericht fehlt — fehlenden Finanzbericht für das Unternehmen einreichen.', 'A monthly report is missing — file the missing financial report for the company.', 'info', 1, 'small', 'Controlling'],
+        ['deadline.due', 'Nahende Frist', 'Upcoming deadline', 'Eine Compliance-Frist läuft bald ab — Aufgabe vor Ablauf erledigen.', 'A compliance deadline is near — complete the task before it expires.', 'warning', 1, 'small', 'Fachverantwortlicher'],
+        ['risk.high', 'Hohes Risiko', 'High risk', 'Eine Risikobeurteilung mit hohem Risiko ist offen — Verantwortlichen zuweisen und Maßnahmen definieren.', 'A high-risk assessment is open — assign a responsible person and define measures.', 'critical', 1, 'large', 'Geschäftsführung'],
     ];
 
     /** Run the engine: scan recent signals, upsert open recommendations per company. */
@@ -40,7 +40,7 @@ class DecisionEngine
 
         $created = $this->runSuggestions();
 
-        foreach (self::RULES as [$prefix, $challengeDe, $challengeEn, $actionDe, $actionEn, $severity, $min]) {
+        foreach (self::RULES as [$prefix, $challengeDe, $challengeEn, $actionDe, $actionEn, $severity, $min, $effort, $responsible]) {
             $signals = Signal::query()
                 ->where('type', 'like', $prefix.'%')
                 ->where('occurred_at', '>=', now()->subDays(30))
@@ -78,7 +78,10 @@ class DecisionEngine
                     'title_en' => $challengeEn,
                     'description' => $actionDe,
                     'description_en' => $actionEn,
-                    'evidence' => $this->evidence($prefix, $companySignals->count()),
+                    'evidence' => $this->evidence($prefix, $companySignals->count()) + [
+                        'effort' => $effort,
+                        'responsible' => $responsible,
+                    ],
                     'severity' => $severity,
                     'status' => 'open',
                 ]);
