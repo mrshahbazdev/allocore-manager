@@ -42,6 +42,7 @@ return [
     'failed' => 'Fehlgeschlagen',
     'dismissed' => 'Abgelehnt',
     'done' => 'Erledigt',
+    'expired' => 'Abgelaufen',
     'critical' => 'Kritisch',
     'warning' => 'Warnung',
     'info' => 'Info',
@@ -140,4 +141,8 @@ return [
     'Companies affected' => 'Unternehmen',
     'Signals (30d)' => 'Signale (30T)',
     'No patterns yet.' => 'Noch keine Muster.',
+    'All types' => 'Alle Typen',
+    'All companies' => 'Alle Unternehmen',
+    'Filter' => 'Filtern',
+    'Reset' => 'Zurücksetzen',
 ];

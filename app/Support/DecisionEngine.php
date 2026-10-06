@@ -33,6 +33,11 @@ class DecisionEngine
     /** Run the engine: scan recent signals, upsert open recommendations per company. */
     public function run(): int
     {
+        Recommendation::query()
+            ->where('status', 'open')
+            ->where('created_at', '<', now()->subDays(45))
+            ->update(['status' => 'expired']);
+
         $created = $this->runSuggestions();
 
         foreach (self::RULES as [$prefix, $challengeDe, $challengeEn, $actionDe, $actionEn, $severity, $min]) {

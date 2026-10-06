@@ -17,7 +17,7 @@ class DashboardController extends Controller
         $recs = $this->recommendationsFor($user);
 
         $open = $recs->where('status', 'open')->values();
-        $done = $recs->whereIn('status', ['done', 'dismissed'])->values();
+        $done = $recs->whereIn('status', ['done', 'dismissed', 'expired'])->values();
 
         return view('dashboard', [
             'user' => $user,
@@ -40,7 +40,7 @@ class DashboardController extends Controller
         return view('recommendations', [
             'user' => $user,
             'open' => $recs->where('status', 'open')->values(),
-            'done' => $recs->whereIn('status', ['done', 'dismissed'])->values(),
+            'done' => $recs->whereIn('status', ['done', 'dismissed', 'expired'])->values(),
             'navOpen' => $recs->where('status', 'open')->count(),
         ]);
     }
@@ -50,10 +50,17 @@ class DashboardController extends Controller
         $user = $request->user();
         $navOpen = $this->recommendationsFor($user)->where('status', 'open')->count();
 
+        $query = Signal::with('source')->latest('occurred_at')
+            ->when($request->filled('type'), fn ($q) => $q->where('type', $request->type))
+            ->when($request->filled('company'), fn ($q) => $q->where('company_key', $request->company));
+
         return view('signals', [
             'user' => $user,
             'navOpen' => $navOpen,
-            'signals' => Signal::with('source')->latest('occurred_at')->paginate(50),
+            'signals' => $query->paginate(50)->withQueryString(),
+            'types' => Signal::selectRaw('type, count(*) as n')->groupBy('type')->orderBy('type')->pluck('n', 'type'),
+            'companies' => Signal::whereNotNull('company_key')->distinct()->orderBy('company_key')->pluck('company_key'),
+            'filters' => $request->only('type', 'company'),
         ]);
     }
 
@@ -69,7 +76,7 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($c) {
                 $open = Recommendation::where('company_key', $c->company_key)->where('status', 'open')->count();
-                $done = Recommendation::where('company_key', $c->company_key)->whereIn('status', ['done', 'dismissed'])->count();
+                $done = Recommendation::where('company_key', $c->company_key)->whereIn('status', ['done', 'dismissed', 'expired'])->count();
 
                 return (object) ['company_key' => $c->company_key, 'signals' => $c->n, 'open' => $open, 'done' => $done];
             });

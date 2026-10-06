@@ -42,6 +42,7 @@ return [
     'failed' => 'Failed',
     'dismissed' => 'Dismissed',
     'done' => 'Done',
+    'expired' => 'Expired',
     'critical' => 'Critical',
     'warning' => 'Warning',
     'info' => 'Info',
@@ -140,4 +141,8 @@ return [
     'Companies affected' => 'Companies',
     'Signals (30d)' => 'Signals (30d)',
     'No patterns yet.' => 'No patterns yet.',
+    'All types' => 'All types',
+    'All companies' => 'All companies',
+    'Filter' => 'Filter',
+    'Reset' => 'Reset',
 ];
