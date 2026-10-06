@@ -153,4 +153,11 @@ return [
     'Neu' => 'Neu',
     'Copy' => 'Kopieren',
     'AI Coach' => 'KI-Coach',
+    'Create' => 'Anlegen',
+    'New user' => 'Neuer Benutzer',
+    'user_created' => 'Benutzer angelegt.',
+    'Rename' => 'Umbenennen / zusammenführen',
+    'New name' => 'Neuer Name',
+    'company_renamed' => '„:from“ in „:to“ umbenannt (:n Einträge aktualisiert).',
+    'company_rename_hint' => 'Umbenennen verschiebt alle Benutzer, Signale und Empfehlungen auf den neuen Namen — so lassen sich zwei Schlüssel zusammenführen.',
 ];

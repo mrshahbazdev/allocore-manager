@@ -50,7 +50,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/app/patterns', [DashboardController::class, 'patterns'])->name('patterns');
     Route::get('/app/learning', [DashboardController::class, 'learning'])->name('learning');
     Route::get('/app/users', [UserAdminController::class, 'index'])->name('users');
+    Route::post('/app/users', [UserAdminController::class, 'store'])->name('users.store');
     Route::put('/app/users/{user}', [UserAdminController::class, 'update'])->name('users.update');
+    Route::post('/app/companies/rename', [UserAdminController::class, 'renameCompany'])->name('companies.rename');
     Route::post('/recommendations/{recommendation}/outcome', [OutcomeController::class, 'store'])->name('outcome');
     Route::post('/recommendations/{recommendation}/reopen', [OutcomeController::class, 'reopen'])->name('recommendations.reopen');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

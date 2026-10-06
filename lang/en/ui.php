@@ -153,4 +153,11 @@ return [
     'Neu' => 'New',
     'Copy' => 'Copy',
     'AI Coach' => 'AI Coach',
+    'Create' => 'Create',
+    'New user' => 'New user',
+    'user_created' => 'User created.',
+    'Rename' => 'Rename / merge',
+    'New name' => 'New name',
+    'company_renamed' => 'Renamed ":from" to ":to" (:n records updated).',
+    'company_rename_hint' => 'Renaming moves all users, signals and recommendations to the new name — use it to merge two keys into one.',
 ];
