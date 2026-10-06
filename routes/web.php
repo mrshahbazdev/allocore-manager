@@ -6,7 +6,10 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\OutcomeController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\SourceAdminController;
 use App\Http\Controllers\SsoController;
+use App\Http\Controllers\UserAdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/app');
@@ -38,6 +41,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/app/recommendations', [DashboardController::class, 'recommendations'])->name('recommendations');
     Route::get('/app/signals', [DashboardController::class, 'signals'])->name('signals');
     Route::get('/app/companies', [DashboardController::class, 'companies'])->name('companies');
+    Route::get('/app/settings', [SettingsController::class, 'form'])->name('settings');
+    Route::put('/app/settings/profile', [SettingsController::class, 'profile'])->name('settings.profile');
+    Route::put('/app/settings/password', [SettingsController::class, 'password'])->name('settings.password');
+    Route::get('/app/sources', [SourceAdminController::class, 'index'])->name('sources');
+    Route::post('/app/sources', [SourceAdminController::class, 'store'])->name('sources.store');
+    Route::delete('/app/sources/{source}', [SourceAdminController::class, 'destroy'])->name('sources.destroy');
+    Route::get('/app/users', [UserAdminController::class, 'index'])->name('users');
+    Route::put('/app/users/{user}', [UserAdminController::class, 'update'])->name('users.update');
     Route::post('/recommendations/{recommendation}/outcome', [OutcomeController::class, 'store'])->name('outcome');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
