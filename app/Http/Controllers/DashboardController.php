@@ -6,6 +6,7 @@ use App\Models\Outcome;
 use App\Models\Pattern;
 use App\Models\Recommendation;
 use App\Models\Signal;
+use App\Support\AiCoach;
 use App\Support\DecisionEngine;
 use Illuminate\Http\Request;
 
@@ -19,9 +20,18 @@ class DashboardController extends Controller
         $open = $recs->where('status', 'open')->values();
         $done = $recs->whereIn('status', ['done', 'dismissed', 'expired'])->values();
 
+        $sortedOpen = $this->sortBySeverity($open);
+        $coach = AiCoach::summary(
+            $user->id,
+            $sortedOpen->map(fn ($r) => ['title' => $r->localizedTitle(), 'severity' => $r->severity, 'company' => $r->company_key ?? '—'])->all(),
+            Signal::selectRaw('type, count(*) as n')->where('occurred_at', '>=', now()->subDays(7))->groupBy('type')->pluck('n', 'type')->all(),
+            app()->getLocale()
+        );
+
         return view('dashboard', [
+            'coach' => $coach,
             'user' => $user,
-            'open' => $this->sortBySeverity($open),
+            'open' => $sortedOpen,
             'done' => $done,
             'navOpen' => $open->count(),
             'stats' => $this->stats($open, $done),

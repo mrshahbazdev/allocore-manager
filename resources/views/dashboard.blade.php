@@ -9,6 +9,11 @@
   </div>
 </div>
 
+<div class="card" style="margin-bottom:16px">
+  <div class="k" style="font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);font-weight:600;margin-bottom:6px">{{ __('ui.AI Coach') }}</div>
+  <div style="font-size:14.5px;line-height:1.5">{{ $coach }}</div>
+</div>
+
 <div class="statgrid">
   <div class="statcard"><div class="k">{{ __('ui.open') }}</div><div class="v {{ $stats['open'] ? 'amber' : '' }}">{{ $stats['open'] }}</div></div>
   <div class="statcard"><div class="k">{{ __('ui.decided') }}</div><div class="v">{{ $stats['done'] }}</div></div>

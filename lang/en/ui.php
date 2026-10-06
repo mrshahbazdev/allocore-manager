@@ -152,4 +152,5 @@ return [
     'reopened' => 'Recommendation reopened.',
     'Neu' => 'New',
     'Copy' => 'Copy',
+    'AI Coach' => 'AI Coach',
 ];

@@ -152,4 +152,5 @@ return [
     'reopened' => 'Empfehlung erneut geöffnet.',
     'Neu' => 'Neu',
     'Copy' => 'Kopieren',
+    'AI Coach' => 'KI-Coach',
 ];
