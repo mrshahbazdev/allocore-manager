@@ -145,4 +145,7 @@ return [
     'All companies' => 'All companies',
     'Filter' => 'Filter',
     'Reset' => 'Reset',
+    'Note (optional)' => 'Note (optional)',
+    'Note' => 'Note',
+    'Last signal' => 'Last signal',
 ];

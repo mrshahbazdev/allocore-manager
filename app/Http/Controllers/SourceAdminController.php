@@ -21,7 +21,7 @@ class SourceAdminController extends Controller
 
         return view('sources', [
             'user' => $request->user(),
-            'sources' => Source::withCount('signals')->orderBy('name')->get(),
+            'sources' => Source::withCount('signals')->withMax('signals', 'occurred_at')->orderBy('name')->get(),
         ]);
     }
 

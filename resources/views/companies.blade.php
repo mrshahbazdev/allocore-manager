@@ -14,7 +14,7 @@
     <tr><th>{{ __('ui.Company') }}</th><th>{{ __('ui.Signals') }}</th><th>{{ __('ui.open') }}</th><th>{{ __('ui.decided') }}</th></tr>
     @foreach($companies as $c)
       <tr>
-        <td>{{ $c->company_key }}</td>
+        <td><a href="{{ route('signals', ['company' => $c->company_key]) }}" style="color:var(--accent);text-decoration:none;font-weight:600">{{ $c->company_key }}</a></td>
         <td class="num">{{ $c->signals }}</td>
         <td class="num">{{ $c->open }}</td>
         <td class="num">{{ $c->done }}</td>

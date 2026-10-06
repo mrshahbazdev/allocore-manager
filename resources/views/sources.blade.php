@@ -22,7 +22,7 @@
 
 <table>
   <thead><tr>
-    <th>{{ __('ui.Name') }}</th><th>{{ __('ui.Token') }}</th><th>{{ __('ui.Ingest URL') }}</th><th class="num">{{ __('ui.Signals') }}</th><th></th>
+    <th>{{ __('ui.Name') }}</th><th>{{ __('ui.Token') }}</th><th>{{ __('ui.Ingest URL') }}</th><th class="num">{{ __('ui.Signals') }}</th><th>{{ __('ui.Last signal') }}</th><th></th>
   </tr></thead>
   <tbody>
   @forelse($sources as $s)
@@ -31,6 +31,7 @@
       <td><span class="chip">{{ \Illuminate\Support\Str::limit($s->token, 12, '…') }}</span></td>
       <td><span class="chip">POST /ingest/{{ \Illuminate\Support\Str::limit($s->token, 10, '…') }}</span></td>
       <td class="num">{{ $s->signals_count }}</td>
+      <td>{{ $s->signals_max_occurred_at ? \Illuminate\Support\Carbon::parse($s->signals_max_occurred_at)->format('d.m.Y H:i') : '—' }}</td>
       <td style="text-align:right">
         <form method="post" action="{{ route('sources.destroy', $s) }}" onsubmit="return confirm('{{ __('ui.source_delete_confirm') }}')">
           @csrf @method('DELETE')
@@ -39,7 +40,7 @@
       </td>
     </tr>
   @empty
-    <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:28px">{{ __('ui.No sources yet.') }}</td></tr>
+    <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:28px">{{ __('ui.No sources yet.') }}</td></tr>
   @endforelse
   </tbody>
 </table>

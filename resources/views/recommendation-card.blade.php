@@ -17,10 +17,18 @@
     </div>
   @endif
   @if($rec->status === 'open')
-  <div class="actions">
-    <form method="post" action="{{ route('outcome', $rec) }}">@csrf<input type="hidden" name="result" value="success"><button class="yes" type="submit">{{ __('ui.Done — it worked') }}</button></form>
-    <form method="post" action="{{ route('outcome', $rec) }}">@csrf<input type="hidden" name="result" value="failed"><button type="submit">{{ __("ui.Didn't work") }}</button></form>
-    <form method="post" action="{{ route('outcome', $rec) }}">@csrf<input type="hidden" name="result" value="dismissed"><button type="submit">{{ __('ui.Not relevant') }}</button></form>
-  </div>
+  <form method="post" action="{{ route('outcome', $rec) }}">
+    @csrf
+    <input type="text" name="note" placeholder="{{ __('ui.Note (optional)') }}" style="width:100%;padding:8px 11px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:12.5px;margin-bottom:8px">
+    <div class="actions">
+      <button class="yes" type="submit" name="result" value="success">{{ __('ui.Done — it worked') }}</button>
+      <button type="submit" name="result" value="failed">{{ __("ui.Didn't work") }}</button>
+      <button type="submit" name="result" value="dismissed">{{ __('ui.Not relevant') }}</button>
+    </div>
+  </form>
+  @else
+    @if($rec->latestOutcome?->note)
+      <div class="meta"><span><b>{{ __('ui.Note') }}</b> · {{ $rec->latestOutcome->note }}</span></div>
+    @endif
   @endif
 </div>
