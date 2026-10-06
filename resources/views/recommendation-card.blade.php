@@ -2,6 +2,9 @@
   <div class="top">
     <div class="t">{{ $rec->localizedTitle() }}</div>
     @if($rec->status === 'open')
+      @if($rec->created_at->gt(now()->subDay()))
+        <span class="sev neutral" style="background:var(--warning-soft);color:var(--warning)"><i style="background:var(--warning)"></i>{{ __('ui.Neu') }}</span>
+      @endif
       <span class="sev {{ $rec->severity }}"><i></i>{{ __('ui.'.$rec->severity) }}</span>
     @else
       <span class="sev neutral"><i></i>{{ __('ui.'.($rec->latestOutcome?->result ?? $rec->status)) }}</span>

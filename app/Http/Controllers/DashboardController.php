@@ -21,7 +21,7 @@ class DashboardController extends Controller
 
         return view('dashboard', [
             'user' => $user,
-            'open' => $open,
+            'open' => $this->sortBySeverity($open),
             'done' => $done,
             'navOpen' => $open->count(),
             'stats' => $this->stats($open, $done),
@@ -45,7 +45,7 @@ class DashboardController extends Controller
 
         return view('recommendations', [
             'user' => $user,
-            'open' => $recs->where('status', 'open')->values(),
+            'open' => $this->sortBySeverity($recs->where('status', 'open')->values()),
             'done' => $recs->whereIn('status', ['done', 'dismissed', 'expired'])->values(),
             'navOpen' => $recs->where('status', 'open')->count(),
             'codes' => $codes,
@@ -165,6 +165,13 @@ class DashboardController extends Controller
             ->orderByRaw("case severity when 'critical' then 0 when 'warning' then 1 else 2 end")
             ->orderByDesc('created_at')
             ->get();
+    }
+
+    private function sortBySeverity($recs)
+    {
+        $order = ['critical' => 0, 'warning' => 1, 'info' => 2];
+
+        return $recs->sortBy(fn ($r) => $order[$r->severity] ?? 3)->values();
     }
 
     private function stats($open, $done): array

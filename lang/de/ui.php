@@ -150,4 +150,5 @@ return [
     'Last signal' => 'Letztes Signal',
     'Reopen' => 'Erneut öffnen',
     'reopened' => 'Empfehlung erneut geöffnet.',
+    'Neu' => 'Neu',
 ];
