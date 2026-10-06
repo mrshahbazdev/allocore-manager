@@ -67,4 +67,12 @@ return [
     'companies_sub' => 'Unternehmen, die Signale senden, und deren Ergebnisse.',
     'No signals yet.' => 'Noch keine Signale.',
     'No companies reporting yet.' => 'Noch keine Unternehmen melden.',
+    'hero_title_a' => 'Die beste nächste Aktion,',
+    'hero_title_b' => 'gelernt aus dem Ökosystem.',
+    'hero_lede' => 'Der Allocore Manager lernt aus jedem Unternehmen, jeder Aktion und jedem Ergebnis — und sagt jedem Beteiligten, was als Nächstes zu tun ist.',
+    'loop_1' => 'Signale kommen aus Ihren Tools',
+    'loop_2' => 'Muster entstehen über Unternehmen',
+    'loop_3' => 'Empfehlungen gehen an jede Rolle',
+    'loop_4' => 'Ergebnisse lehren die nächste Antwort',
+    'mfoot' => 'Entscheidungsintelligenz für das DISAVO-Ökosystem',
 ];
