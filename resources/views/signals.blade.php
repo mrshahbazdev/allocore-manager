@@ -41,7 +41,20 @@
           <details>
             <summary style="cursor:pointer"><span class="chip">{{ $s->type }}</span></summary>
             @if($s->payload)
-              <pre style="margin:8px 0 0;padding:10px;background:#f4f5f6;border:1px solid var(--line);border-radius:8px;font-size:11.5px;white-space:pre-wrap;max-width:420px">{{ json_encode($s->payload, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) }}</pre>
+              <div style="margin-top:8px;max-width:420px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff">
+                @foreach(collect($s->payload)->filter(fn($v) => !is_array($v) && $v !== null) as $k => $v)
+                  <div style="display:flex;justify-content:space-between;gap:14px;padding:8px 12px;{{ !$loop->last ? 'border-bottom:1px solid var(--line);' : '' }}{{ $loop->even ? 'background:#fafbfc;' : '' }}">
+                    <span style="font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);font-weight:600;padding-top:2px">{{ str_replace('_', ' ', $k) }}</span>
+                    <span style="font-size:12.5px;font-weight:500;text-align:right;word-break:break-word">{{ is_bool($v) ? ($v ? __('ui.Yes') : __('ui.No')) : $v }}</span>
+                  </div>
+                @endforeach
+                @if(collect($s->payload)->contains(fn($v) => is_array($v) || $v === null))
+                  <details style="border-top:1px solid var(--line);background:#fafbfc">
+                    <summary style="cursor:pointer;padding:6px 12px;font-size:11px;color:var(--faint)">JSON</summary>
+                    <pre style="margin:0;padding:8px 12px 10px;font-size:11px;white-space:pre-wrap">{{ json_encode($s->payload, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) }}</pre>
+                  </details>
+                @endif
+              </div>
             @else
               <div style="margin-top:8px;color:var(--faint);font-size:12px">—</div>
             @endif
