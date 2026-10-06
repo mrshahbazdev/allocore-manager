@@ -134,4 +134,10 @@ return [
     'Succeeded' => 'Succeeded',
     'Success rate' => 'Success rate',
     'No rules yet.' => 'No rules yet.',
+    'Patterns' => 'Patterns',
+    'patterns_sub' => 'Challenges detected from incoming signals across the ecosystem.',
+    'Challenge' => 'Challenge',
+    'Companies affected' => 'Companies',
+    'Signals (30d)' => 'Signals (30d)',
+    'No patterns yet.' => 'No patterns yet.',
 ];

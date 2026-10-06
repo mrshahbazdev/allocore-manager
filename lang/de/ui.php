@@ -134,4 +134,10 @@ return [
     'Succeeded' => 'Erfolgreich',
     'Success rate' => 'Erfolgsquote',
     'No rules yet.' => 'Noch keine Regeln.',
+    'Patterns' => 'Muster',
+    'patterns_sub' => 'Herausforderungen, erkannt aus eingehenden Signalen im Ökosystem.',
+    'Challenge' => 'Herausforderung',
+    'Companies affected' => 'Unternehmen',
+    'Signals (30d)' => 'Signale (30T)',
+    'No patterns yet.' => 'Noch keine Muster.',
 ];

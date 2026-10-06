@@ -81,6 +81,28 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function patterns(Request $request)
+    {
+        $user = $request->user();
+        abort_unless(in_array($user->role, ['platform_manager', 'allocore']), 403);
+
+        $navOpen = $this->recommendationsFor($user)->where('status', 'open')->count();
+
+        $patterns = Pattern::orderByDesc('companies_count')->get()
+            ->map(function ($p) {
+                $p->open_recs = Recommendation::where('pattern_id', $p->id)->where('status', 'open')->count();
+                $p->total_recs = Recommendation::where('pattern_id', $p->id)->count();
+
+                return $p;
+            });
+
+        return view('patterns', [
+            'user' => $user,
+            'navOpen' => $navOpen,
+            'patterns' => $patterns,
+        ]);
+    }
+
     public function learning(Request $request)
     {
         $user = $request->user();

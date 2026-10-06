@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/app/sources', [SourceAdminController::class, 'index'])->name('sources');
     Route::post('/app/sources', [SourceAdminController::class, 'store'])->name('sources.store');
     Route::delete('/app/sources/{source}', [SourceAdminController::class, 'destroy'])->name('sources.destroy');
+    Route::get('/app/patterns', [DashboardController::class, 'patterns'])->name('patterns');
     Route::get('/app/learning', [DashboardController::class, 'learning'])->name('learning');
     Route::get('/app/users', [UserAdminController::class, 'index'])->name('users');
     Route::put('/app/users/{user}', [UserAdminController::class, 'update'])->name('users.update');
