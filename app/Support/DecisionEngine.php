@@ -44,6 +44,8 @@ class DecisionEngine
 
         $created = $this->runSuggestions();
 
+        $this->runResolutions();
+
         foreach (self::RULES as [$prefix, $challengeDe, $challengeEn, $actionDe, $actionEn, $severity, $min, $effort, $responsible]) {
             $signals = Signal::query()
                 ->where('type', 'like', $prefix.'%')
@@ -94,6 +96,46 @@ class DecisionEngine
         }
 
         return $created;
+    }
+
+    /**
+     * Auto-resolution: a positive signal closes matching open cards.
+     * signal type → recommendation code it resolves.
+     */
+    private const RESOLVERS = [
+        'invoice_paid' => 'invoice.overdue',
+        'payment_received' => 'invoice.overdue',
+        'order_done' => 'order_complaint',
+    ];
+
+    private function runResolutions(): void
+    {
+        foreach (self::RESOLVERS as $signalType => $code) {
+            $companies = Signal::query()
+                ->where('type', $signalType)
+                ->where('occurred_at', '>=', now()->subDays(30))
+                ->pluck('company_key')
+                ->filter()
+                ->unique();
+
+            if ($companies->isEmpty()) {
+                continue;
+            }
+
+            Recommendation::query()
+                ->where('code', $code)
+                ->where('status', 'open')
+                ->whereIn('company_key', $companies)
+                ->get()
+                ->each(function (Recommendation $rec): void {
+                    $rec->update(['status' => 'done']);
+                    Outcome::create([
+                        'recommendation_id' => $rec->id,
+                        'result' => 'success',
+                        'note' => 'auto-resolved by signal',
+                    ]);
+                });
+        }
     }
 
     /**
