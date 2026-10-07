@@ -28,6 +28,10 @@ class DecisionEngine
         ['report.missing', 'Fehlende Berichte', 'Missing reports', 'Ein Monatsbericht fehlt — fehlenden Finanzbericht für das Unternehmen einreichen.', 'A monthly report is missing — file the missing financial report for the company.', 'info', 1, 'small', 'Controlling'],
         ['deadline.due', 'Nahende Frist', 'Upcoming deadline', 'Eine Compliance-Frist läuft bald ab — Aufgabe vor Ablauf erledigen.', 'A compliance deadline is near — complete the task before it expires.', 'warning', 1, 'small', 'Fachverantwortlicher'],
         ['risk.high', 'Hohes Risiko', 'High risk', 'Eine Risikobeurteilung mit hohem Risiko ist offen — Verantwortlichen zuweisen und Maßnahmen definieren.', 'A high-risk assessment is open — assign a responsible person and define measures.', 'critical', 1, 'large', 'Geschäftsführung'],
+        ['order_complaint', 'Reklamation im Auftrag', 'Order complaint', 'Eine Reklamation wurde zu einem Zahntechnik-Auftrag gemeldet — Fall prüfen und Korrekturmaßnahme einleiten.', 'A complaint was filed on a dental-lab order — review the case and start a corrective measure.', 'critical', 1, 'medium', 'Qualitätsmanagement'],
+        ['order_lead_time', 'Lange Durchlaufzeit', 'Long lead time', 'Ein Auftrag hat eine lange Durchlaufzeit — Prozessschritte prüfen und Engpässe beseitigen.', 'An order shows a long lead time — review the process steps and remove bottlenecks.', 'warning', 1, 'medium', 'Produktionsleitung'],
+        ['lead_qualified', 'Qualifizierter Lead wartet', 'Qualified lead waiting', 'Ein Lead wurde qualifiziert — zeitnah kontaktieren und Angebot erstellen.', 'A lead was qualified — reach out promptly and prepare an offer.', 'info', 1, 'small', 'Vertrieb'],
+        ['timeentry_billable', 'Unberechnete Stunden', 'Unbilled hours', 'Abrechenbare Zeiteinträge liegen vor — Stunden in eine Rechnung überführen.', 'Billable time entries exist — convert the hours into an invoice.', 'info', 5, 'small', 'Buchhaltung'],
     ];
 
     /** Run the engine: scan recent signals, upsert open recommendations per company. */
