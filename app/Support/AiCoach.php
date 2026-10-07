@@ -55,9 +55,12 @@ class AiCoach
         )->implode("\n");
 
         $lang = $locale === 'de' ? 'German' : 'English';
+        $context = $open === []
+            ? "No open recommendations. Recent activity:\n{$details}\n\nComment on the recent activity — what it means and anything worth watching."
+            : "Open recommendations:\n{$items}\n\nSignal types last 7 days: {$signals}\n\nRecent signals:\n{$details}";
         $messages = [
             ['role' => 'system', 'content' => "You are a concise business coach inside a decision-intelligence dashboard. Answer in {$lang}. Write 2-3 sentences max: what needs attention most right now and why. Reference concrete details (invoice numbers, amounts, customer names) when they matter. Plain sentences, no lists, no markdown."],
-            ['role' => 'user', 'content' => "Open recommendations:\n{$items}\n\nSignal types last 7 days: {$signals}\n\nRecent signals:\n{$details}"],
+            ['role' => 'user', 'content' => $context],
         ];
 
         try {
