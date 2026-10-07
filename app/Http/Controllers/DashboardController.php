@@ -21,10 +21,22 @@ class DashboardController extends Controller
         $done = $recs->whereIn('status', ['done', 'dismissed', 'expired'])->values();
 
         $sortedOpen = $this->sortBySeverity($open);
+        $signalScope = Signal::query()
+            ->when($user->role === 'member' && $user->company_key,
+                fn ($q) => $q->where(fn ($q2) => $q2->where('company_key', $user->company_key)->orWhereNull('company_key')))
+            ->when($user->role === 'member' && ! $user->company_key,
+                fn ($q) => $q->where('company_key', 'default'));
+
         $coach = AiCoach::summary(
             $user->id,
             $sortedOpen->map(fn ($r) => ['title' => $r->localizedTitle(), 'severity' => $r->severity, 'company' => $r->company_key ?? '—'])->all(),
-            Signal::selectRaw('type, count(*) as n')->where('occurred_at', '>=', now()->subDays(7))->groupBy('type')->pluck('n', 'type')->all(),
+            (clone $signalScope)->selectRaw('type, count(*) as n')->where('occurred_at', '>=', now()->subDays(7))->groupBy('type')->pluck('n', 'type')->all(),
+            (clone $signalScope)->whereNotNull('payload')->latest('occurred_at')->limit(10)->get()->map(fn ($s) => [
+                'type' => $s->type,
+                'company' => $s->company_key ?? '—',
+                'fields' => collect($s->payload ?? [])->filter(fn ($v) => ! is_array($v) && $v !== null)->take(6)->map(fn ($v, $k) => "{$k}=".mb_strimwidth((string) (is_bool($v) ? var_export($v, true) : $v), 0, 60, '…'))->implode(', '),
+                'at' => $s->occurred_at?->diffForHumans(),
+            ])->all(),
             app()->getLocale()
         );
 

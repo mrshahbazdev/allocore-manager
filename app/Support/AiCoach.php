@@ -21,14 +21,15 @@ class AiCoach
     /**
      * @param  array<int, array{title:string,severity:string,company:string}>  $open
      * @param  array<string, int>  $signalTypes
+     * @param  array<int, array{type:string,company:string,fields:string,at:?string}>  $recentSignals
      */
-    public static function summary(int $userId, array $open, array $signalTypes, string $locale): string
+    public static function summary(int $userId, array $open, array $signalTypes, array $recentSignals, string $locale): string
     {
-        $key = "coach:{$userId}:{$locale}:".md5(json_encode($open));
+        $key = "coach:{$userId}:{$locale}:".md5(json_encode([$open, $recentSignals]));
 
-        return Cache::remember($key, 1800, function () use ($open, $signalTypes, $locale) {
+        return Cache::remember($key, 1800, function () use ($open, $signalTypes, $recentSignals, $locale) {
             if (self::available()) {
-                $text = self::generate($open, $signalTypes, $locale);
+                $text = self::generate($open, $signalTypes, $recentSignals, $locale);
                 if ($text !== null) {
                     return $text;
                 }
@@ -38,7 +39,10 @@ class AiCoach
         });
     }
 
-    private static function generate(array $open, array $signalTypes, string $locale): ?string
+    /**
+     * @param  array<int, array{type:string,company:string,fields:string,at:?string}>  $recentSignals
+     */
+    private static function generate(array $open, array $signalTypes, array $recentSignals, string $locale): ?string
     {
         $items = collect($open)->take(10)->map(
             fn (array $r) => "- [{$r['severity']}] {$r['company']}: {$r['title']}"
@@ -46,10 +50,14 @@ class AiCoach
 
         $signals = collect($signalTypes)->map(fn (int $n, string $t) => "{$t}×{$n}")->implode(', ');
 
+        $details = collect($recentSignals)->take(10)->map(
+            fn (array $s) => "- {$s['type']} @ {$s['company']} ({$s['at']}): {$s['fields']}"
+        )->implode("\n");
+
         $lang = $locale === 'de' ? 'German' : 'English';
         $messages = [
-            ['role' => 'system', 'content' => "You are a concise business coach inside a decision-intelligence dashboard. Answer in {$lang}. Write 2-3 sentences max: what needs attention most right now and why. Plain sentences, no lists, no markdown."],
-            ['role' => 'user', 'content' => "Open recommendations:\n{$items}\n\nRecent signal types: {$signals}"],
+            ['role' => 'system', 'content' => "You are a concise business coach inside a decision-intelligence dashboard. Answer in {$lang}. Write 2-3 sentences max: what needs attention most right now and why. Reference concrete details (invoice numbers, amounts, customer names) when they matter. Plain sentences, no lists, no markdown."],
+            ['role' => 'user', 'content' => "Open recommendations:\n{$items}\n\nSignal types last 7 days: {$signals}\n\nRecent signals:\n{$details}"],
         ];
 
         try {
